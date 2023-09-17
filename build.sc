@@ -9,7 +9,7 @@ object ivys {
   val scalatest = ivy"org.scalatest::scalatest:3.2.2"
   val macroParadise = ivy"org.scalamacros:::paradise:2.1.1"
 }
-class ChangbaiCommon extends ScalaModule with SbtModule { this: ScalaModule =>
+class ChangbaiCommon extends ScalaModule with SbtModule {
   override def scalaVersion = ivys.sv
   override def scalacPluginIvyDeps = Agg(ivys.macroParadise, ivys.spinalPlugin)
   override def ivyDeps = Agg(ivys.spinalCore, ivys.spinalLib)
