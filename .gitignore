@@ -18,3 +18,4 @@ docs-target/
 .#*
 /mill.bat
 /gen/
+/mill
