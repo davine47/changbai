@@ -9,12 +9,21 @@ object ivys {
   val scalatest = ivy"org.scalatest::scalatest:3.2.2"
   val macroParadise = ivy"org.scalamacros:::paradise:2.1.1"
 }
-
-object changbai extends ScalaModule with SbtModule {
-  override def millSourcePath = os.pwd
+class ChangbaiCommon extends ScalaModule with SbtModule { this: ScalaModule =>
   override def scalaVersion = ivys.sv
   override def scalacPluginIvyDeps = Agg(ivys.macroParadise, ivys.spinalPlugin)
-  override def scalacOptions = Seq("-Xsource:2.11")
   override def ivyDeps = Agg(ivys.spinalCore, ivys.spinalLib)
+  override def scalacOptions = Seq("-Xsource:2.11")
+}
+
+object vexriscv extends SbtModule {
+  override def millSourcePath = os.pwd / "VexRiscv"
+  override def scalaVersion = ivys.sv
+}
+
+object changbai extends ChangbaiCommon {
+  override def millSourcePath = os.pwd
+  def vexLib = vexriscv
+  override def moduleDeps: Seq[JavaModule] = Seq(vexLib)
 }
 
