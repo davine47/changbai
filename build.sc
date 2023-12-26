@@ -129,15 +129,18 @@ object vexriscv extends HasSpinalhdl with SbtModule{
 
 object changbai extends Module{
 
-  override def millSourcePath = os.pwd
   object chisel extends Cross[ChiselModules]("chisel", "chisel3")
-  trait ChiselModules extends HasChisel {
-
+  trait ChiselModules extends HasChisel with SbtModule {
+    override def millSourcePath = os.pwd / "chisel"
+    override def sources = T.sources {
+      super.sources() ++ Seq(PathRef(millSourcePath / "src" / crossValue / "main" / "scala"))
+    }
     def rocketModule = rocketchip(crossValue)
     override def moduleDeps: Seq[JavaModule] = super.moduleDeps ++ Seq(rocketModule)
   }
-  object spinal extends HasSpinalhdl {
-    
+
+  object spinal extends HasSpinalhdl with SbtModule{
+    override def millSourcePath = os.pwd / "spinal"
     def vexriscvModule = vexriscv
     override def moduleDeps: Seq[JavaModule] = super.moduleDeps ++ Seq(vexriscvModule)
   }

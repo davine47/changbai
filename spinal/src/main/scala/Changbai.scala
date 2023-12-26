@@ -3,7 +3,6 @@ import spinal.core._
 import spinal.lib._
 import lib._
 
-
 class Changbai extends Component with Pipeline {
 
   type T = Changbai
