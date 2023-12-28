@@ -6,3 +6,6 @@ hello:
 
 changbai:
 	mill -i changbai.spinal.runMain changbai.genChangbai
+
+idea:
+	mill mill.idea.GenIdea/idea
