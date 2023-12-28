@@ -1,10 +1,10 @@
 import mill._
 import scalalib._
-import $file.`rocket-chip`.common
-import $file.`rocket-chip`.cde.common
-import $file.`rocket-chip`.hardfloat.build
+import $file.`chisel`.`rocket-chip`.common
+import $file.`chisel`.`rocket-chip`.cde.common
+import $file.`chisel`.`rocket-chip`.hardfloat.build
 
-val spinalVersion = "1.9.3"
+val spinalVersion = "1.9.4"
 
 def relatedScalaVersion = "2.13.10"
 def chiselScalaVersion = "2.13.10"
@@ -79,11 +79,11 @@ trait HasChisel extends SbtModule with Cross.Module[String] {
 object rocketchip extends Cross[RocketChip]("chisel", "chisel3")
 
 trait RocketChip
-  extends millbuild.`rocket-chip`.common.RocketChipModule
+  extends millbuild.`chisel`.`rocket-chip`.common.RocketChipModule
     with HasChisel {
   def scalaVersion: T[String] = T(defaultScalaVersion)
 
-  override def millSourcePath = os.pwd / "rocket-chip"
+  override def millSourcePath = os.pwd / "chisel" /"rocket-chip"
 
   def macrosModule = macros
 
@@ -98,7 +98,7 @@ trait RocketChip
   object macros extends Macros
 
   trait Macros
-    extends millbuild.`rocket-chip`.common.MacrosModule
+    extends millbuild.`chisel`.`rocket-chip`.common.MacrosModule
       with SbtModule {
 
     def scalaVersion: T[String] = T(defaultScalaVersion)
@@ -109,26 +109,26 @@ trait RocketChip
   object hardfloat extends Cross[Hardfloat](crossValue)
 
   trait Hardfloat
-    extends millbuild.`rocket-chip`.hardfloat.common.HardfloatModule with HasChisel {
+    extends millbuild.`chisel`.`rocket-chip`.hardfloat.common.HardfloatModule with HasChisel {
 
     def scalaVersion: T[String] = T(defaultScalaVersion)
 
-    override def millSourcePath = os.pwd / "rocket-chip" / "hardfloat" / "hardfloat"
+    override def millSourcePath = os.pwd / "chisel" /"rocket-chip" / "hardfloat" / "hardfloat"
 
   }
 
   object cde extends CDE
 
-  trait CDE extends millbuild.`rocket-chip`.cde.common.CDEModule with ScalaModule {
+  trait CDE extends millbuild.`chisel`.`rocket-chip`.cde.common.CDEModule with ScalaModule {
 
     def scalaVersion: T[String] = T(defaultScalaVersion)
 
-    override def millSourcePath = os.pwd / "rocket-chip" / "cde" / "cde"
+    override def millSourcePath = os.pwd / "chisel" / "rocket-chip" / "cde" / "cde"
   }
 }
 
 object vexriscv extends HasSpinalhdl with SbtModule{
-  override def millSourcePath = os.pwd / "VexRiscv"
+  override def millSourcePath = os.pwd / "spinal" / "VexRiscv"
   override def moduleDeps: Seq[JavaModule] = super.moduleDeps
 }
 
