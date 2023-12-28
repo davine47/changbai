@@ -23,12 +23,14 @@ def defaultChiselVersions(chiselVersion: String) = chiselVersion match {
   case "chisel" => Map(
     "chisel"        -> ivy"org.chipsalliance::chisel:6.0.0-RC1",
     "chisel-plugin" -> ivy"org.chipsalliance:::chisel-plugin:6.0.0-RC1",
-    "chiseltest"    -> ivy"edu.berkeley.cs::chiseltest:5.0.2"
+    "chiseltest"    -> ivy"edu.berkeley.cs::chiseltest:5.0.2",
+    "mainargs"      -> ivy"com.lihaoyi::mainargs:0.5.0"
   )
   case "chisel3" => Map(
     "chisel"        -> ivy"edu.berkeley.cs::chisel3:3.6.0",
     "chisel-plugin" -> ivy"edu.berkeley.cs:::chisel3-plugin:3.6.0",
-    "chiseltest"    -> ivy"edu.berkeley.cs::chiseltest:0.6.2"
+    "chiseltest"    -> ivy"edu.berkeley.cs::chiseltest:0.6.2",
+    "mainargs"      -> ivy"com.lihaoyi::mainargs:0.5.0"
   )
 }
 
@@ -59,15 +61,18 @@ trait HasChisel extends SbtModule with Cross.Module[String] {
 
   def chiselPluginIvy: Option[Dep] = Some(defaultChiselVersions(crossValue)("chisel-plugin"))
 
+  def changbaiMainargsIvy : Option[Dep] = Some(defaultChiselVersions(crossValue)("mainargs"))
+
   override def scalaVersion = defaultScalaVersion
 
   override def scalacOptions = super.scalacOptions() ++ 
     Agg("-language:reflectiveCalls", "-Ymacro-annotations", "-Ytasty-reader")
 
+  val compileDeps = Agg(changbaiMainargsIvy.get)
   val chiselDeps = Agg(chiselIvy.get)
   val chiselPluginDeps =  Agg(chiselPluginIvy.get)
 
-  override def ivyDeps = super.ivyDeps() ++ chiselDeps
+  override def ivyDeps = super.ivyDeps() ++ chiselDeps ++ compileDeps
   override def scalacPluginIvyDeps = super.scalacPluginIvyDeps() ++ chiselPluginDeps
 }
 
@@ -131,10 +136,13 @@ object changbai extends Module{
 
   object chisel extends Cross[ChiselModules]("chisel", "chisel3")
   trait ChiselModules extends HasChisel with SbtModule {
+
+    def chiselPluginJar: T[Option[PathRef]]
+    override def scalacOptions = T(super.scalacOptions() ++ chiselPluginJar().map(path => s"-Xplugin:${path.path}"))
+
     override def millSourcePath = os.pwd / "chisel"
-    override def sources = T.sources {
-      super.sources() ++ Seq(PathRef(millSourcePath / "src" / crossValue / "main" / "scala"))
-    }
+    override def mainClass = T(Some("freechips.rocketchip.diplomacy.Main"))
+
     def rocketModule = rocketchip(crossValue)
     override def moduleDeps: Seq[JavaModule] = super.moduleDeps ++ Seq(rocketModule)
   }
@@ -146,7 +154,67 @@ object changbai extends Module{
   }
 }
 
+trait Emulator extends Cross.Module2[String, String] {
+  
+  val top: String = crossValue
+  val config: String = crossValue2
 
+  object generator extends Module {
 
+    def elaborate = T {
+      os.proc(
+        mill.util.Jvm.javaExe,
+        "-jar",
+        changbai.chisel("chisel").assembly().path,
+        "--dir", T.dest.toString,
+        "--top", top,
+        "--config", config,
+      ).call()
+      PathRef(T.dest)
+    }
+  
+    def chiselAnno = T {
+      os.walk(elaborate().path).collectFirst { case p if p.last.endsWith("anno.json") => p }.map(PathRef(_)).get
+    }
 
+    def chirrtl = T {
+      os.walk(elaborate().path).collectFirst { case p if p.last.endsWith("fir") => p }.map(PathRef(_)).get
+    }
+  }
 
+  object mfccompiler extends Module {
+    def compile = T {
+      println(generator.chirrtl().path)
+      println(generator.chiselAnno().path)
+      println(T.dest)
+      os.proc("firtool",
+        generator.chirrtl().path,
+        s"--annotation-file=${generator.chiselAnno().path}",
+        "--disable-annotation-unknown",
+        "-O=debug",
+        "--split-verilog",
+        "--preserve-values=named",
+        "--output-annotation-file=mfc.anno.json",
+        s"-o=${T.dest}"
+      ).call(T.dest)
+      PathRef(T.dest)
+    }
+    // here is build chain
+    def rtls = T {
+      os.read(compile().path / "filelist.f").split("\n").map(str =>
+        try {
+          os.Path(str)
+        } catch {
+          case e: IllegalArgumentException if e.getMessage.contains("is not an absolute path") =>
+            compile().path / str.stripPrefix("./")
+        }
+      ).filter(p => p.ext == "v" || p.ext == "sv").map(PathRef(_)).toSeq
+    }
+  }
+
+}
+
+object emulator extends Cross[Emulator](
+
+  ("sandbox.Hello", "sandbox.HelloConfig")
+)

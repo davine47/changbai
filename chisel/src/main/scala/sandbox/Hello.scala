@@ -1,7 +1,10 @@
 package sandbox
-import chisel3._
 
-class Hello extends Module {
+import chisel3._
+import org.chipsalliance.cde.config.Parameters
+
+class Hello()(implicit p:Parameters) extends Module {
+
   val io = IO(new Bundle {
     val out = Output(UInt(10.W))
   })
