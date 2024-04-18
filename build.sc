@@ -150,6 +150,9 @@ object changbai extends Module{
   object spinal extends HasSpinalhdl with SbtModule{
     override def millSourcePath = os.pwd / "spinal"
     def vexriscvModule = vexriscv
+
+    object test extends SbtModuleTests with TestModule.ScalaTest
+
     override def moduleDeps: Seq[JavaModule] = super.moduleDeps ++ Seq(vexriscvModule)
   }
 }
