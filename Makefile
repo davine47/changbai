@@ -1,6 +1,9 @@
 test:
 	mill emulator[sandbox.Hello,sandbox.HelloConfig].mfccompiler.compile
 
+spinal-adder:
+	mill -i changbai.spinal.runMain v1.genAdder
+
 hello:
 	mill -i changbai.spinal.runMain changbai.sayHello
 
