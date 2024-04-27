@@ -21,3 +21,6 @@ docs-target/
 /mill
 /changbai
 changbaiChangbai.lst
+__pycache__
+sim_build/
+.vscode/
