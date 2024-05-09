@@ -16,11 +16,15 @@ class AdderExample() extends Component{
 
 class DecodingSpecExample extends Component {
   val spec = new DecodingSpec(HardType(UInt(5 bits)))
+  val m000 = M"000"
+  val m100 = M"100"
+  val m101 = M"101"
+  val m111 = M"111"
   spec.setDefault(Masked(U"00011"))
-  spec.addNeeds(Masked(B"000"), Masked(U"11000"))
-  spec.addNeeds(Masked(B"100"), Masked(U"11100"))
-  spec.addNeeds(Masked(B"101"), Masked(U"10101"))
-  spec.addNeeds(Masked(B"111"), Masked(U"11101"))
+  spec.addNeeds(Masked(m000), Masked(U"11000"))
+  spec.addNeeds(Masked(m100), Masked(U"11100"))
+  spec.addNeeds(Masked(m101), Masked(U"10101"))
+  spec.addNeeds(Masked(m111), Masked(U"11101"))
 
   val sel = in Bits (3 bits)
   val result = out UInt (5 bits)
@@ -29,7 +33,7 @@ class DecodingSpecExample extends Component {
 
 object DecodingSpecExample extends App{
   println("Gen Decode example......")
-  SpinalConfig(mode = SystemVerilog, targetDirectory = "decode", genLineComments = true, oneFilePerComponent = true)
+  SpinalConfig(mode = SystemVerilog, targetDirectory = "examples", genLineComments = true, oneFilePerComponent = true)
     .generate {
       val topLevel = new DecodingSpecExample
       topLevel
@@ -38,7 +42,7 @@ object DecodingSpecExample extends App{
 
 object AdderExample extends App{
   println("Gen Adder......")
-  SpinalConfig(mode = SystemVerilog, targetDirectory = "adder", oneFilePerComponent = true)
+  SpinalConfig(mode = SystemVerilog, targetDirectory = "examples", oneFilePerComponent = true)
     .generate {
       val topLevel = new AdderExample
       topLevel
