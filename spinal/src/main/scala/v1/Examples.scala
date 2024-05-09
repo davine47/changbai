@@ -2,9 +2,37 @@ package v1
 
 import changbai.Changbai
 import spinal.core.internals.Operator
-import spinal.core.{B, Component, HardType, IntToBuilder, LiteralBuilder, SpinalConfig, SpinalVerilog, SystemVerilog, U, UInt, in, out}
+import spinal.core.{B, Bits, Component, HardType, IntToBuilder, LiteralBuilder, Mem, SpinalConfig, SpinalVerilog, SystemVerilog, U, UInt, Verilator, in, out}
 import spinal.lib.experimental.chisel.Bundle
 import spinal.lib.logic.{DecodingSpec, Masked}
+
+class RegFileExample extends Component{
+
+  val io = new Bundle {
+    val raddr0 = in UInt(5 bits)
+    val rdata0 = out UInt(64 bits)
+    val raddr1 = in UInt(5 bits)
+    val rdata1 = out UInt(64 bits)
+    val wen = in Bool()
+    val waddr = in UInt(5 bits)
+    val wdata = in UInt(64 bits)
+  }
+
+  val regFile = Mem(Bits(64 bits), 32) addAttribute(Verilator.public)
+
+  io.rdata0 := regFile.readSync(io.raddr0).asUInt
+  io.rdata1 := regFile.readSync(io.raddr1).asUInt
+  regFile.write(io.waddr, io.wdata.asBits, io.wen)
+}
+
+object RegFileExample extends App{
+  println("Gen regfile example......")
+  SpinalConfig(mode = SystemVerilog, targetDirectory = "examples", genLineComments = true, oneFilePerComponent = true)
+    .generate {
+      val topLevel = new RegFileExample
+      topLevel
+    }
+}
 
 class AdderExample() extends Component{
   val io = new Bundle{
