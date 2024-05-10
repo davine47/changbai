@@ -10,6 +10,8 @@ docs-target/
 *.anno.json
 *.swp
 *~
+/examples
+*.vcd
 .addons-dont-touch
 /lib/
 /test_lib/

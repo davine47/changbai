@@ -1,13 +1,15 @@
 SIM ?= verilator
 TOPLEVEL_LANG ?= verilog
 
-VERILOG_SOURCES += $(shell find $(PWD)/../../adder -name "*.v" -or -name "*.sv")
+VERILOG_SOURCES += $(shell find $(PWD)/../../examples -name "*.v" -or -name "*.sv")
 
 # verilog top module name
-TOPLEVEL = EnvAdder
+TOPLEVEL ?= DecodingSpecExample
 
 # python test file name
-MODULE = test_design
+MODULE ?= test_decoder
+
+EXTRA_ARGS += --trace --trace-structs --timescale 1ns/1ns
 
 include $(shell cocotb-config --makefiles)/Makefile.sim
 
