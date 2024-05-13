@@ -4,14 +4,14 @@ test:
 v1-adder:
 	mill -i changbai.spinal.runMain v1.AdderExample
 
+v1-regfile:
+	mill -i changbai.spinal.runMain v1.RegFileExample
+
 v1-decoder:
-	mill -i changbai.spinal.runMain v1.DecodingSpecExample
+	mill -i changbai.spinal.test.runMain changbai.v1.test.IDecoder
 
 hello:
 	mill -i changbai.spinal.runMain changbai.sayHello
-
-test-hello:
-	mill -i changbai.spinal.test.runMain changbai.test.genTestChangbai
 
 changbai:
 	mill -i changbai.spinal.runMain changbai.genChangbai

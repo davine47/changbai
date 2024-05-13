@@ -26,3 +26,5 @@ changbaiChangbai.lst
 __pycache__
 sim_build/
 .vscode/
+changbaiTest/
+*.lst

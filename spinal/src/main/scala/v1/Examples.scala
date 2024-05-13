@@ -45,7 +45,7 @@ class AdderExample() extends Component{
 class DecodingSpecExample extends Component {
   val spec = new DecodingSpec(HardType(UInt(5 bits)))
   val m000 = M"000"
-  val m100 = M"100"
+  val m100 = M"1-0"
   val m101 = M"101"
   val m111 = M"111"
   spec.setDefault(Masked(U"00011"))
