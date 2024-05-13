@@ -2,7 +2,7 @@ SIM ?= verilator
 TOPLEVEL_LANG ?= verilog
 
 VERILOG_SOURCES += $(shell find $(PWD)/../../examples -name "*.v" -or -name "*.sv")
-
+VERILOG_SOURCES += $(shell find $(PWD)/../../changbaiTest -name "*.v" -or -name "*.sv")
 # verilog top module name
 TOPLEVEL ?= DecodingSpecExample
 

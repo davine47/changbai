@@ -21,6 +21,7 @@ object FnService extends MicroService with MicroArchDecodeMap {
   override def default = M"0000"
   override def table: Array[(MaskedLiteral, MaskedLiteral)] = Array(
     ADD -> M"0001",
+    ADDI -> M"0001",
     SUB -> M"0011"
   )
 }
@@ -30,7 +31,8 @@ object RegFileService extends MicroService with MicroArchDecodeMap {
   override def range: Range.Inclusive = (5 downto 4)
   override def default = M"00"
   override def table: Array[(MaskedLiteral, MaskedLiteral)] = Array(
-    ADD -> M"11"
+    ADD -> M"11",
+    ADDI -> M"10"
   )
 }
 
