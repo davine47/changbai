@@ -4,6 +4,8 @@ import spinal.core.{B, Bits, Bundle, Component, False, HardType, IntToBuilder, L
 import Instructions._
 import spinal.lib.logic.{DecodingSpec, Masked}
 
+import scala.language.postfixOps
+
 class IDecodeBundle extends Bundle {
   val rawInst = in Bits(32 bits)
   val result = out Bits(DecodeService.targetWidth bits)

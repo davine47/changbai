@@ -2,7 +2,9 @@ package v1
 import Instructions._
 import spinal.core.internals.Literal
 import spinal.core.{B, Bits, Component, False, HardType, IntToBuilder, LiteralBuilder, MaskedLiteral, SpinalEnum, SpinalEnumElement, SpinalEnumEncoding, True, U, default}
+import spinal.lib.cpu.riscv.impl.Utils.M
 import spinal.lib.logic.{DecodingSpec, Masked}
+import v1.FnService.FN_ADD
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
@@ -17,13 +19,22 @@ trait MicroArchDecodeMap {
 
 object FnService extends MicroService with MicroArchDecodeMap {
 
+  def FN_ADD = "0000"
+  def FN_SL  = "0001"
+  def FN_SEQ = "0010"
+  def FN_SNE = "0011"
+
   override def range: Range.Inclusive = (3 downto 0)
   override def default = M"0000"
   override def table: Array[(MaskedLiteral, MaskedLiteral)] = Array(
-    ADD -> M"0001",
-    ADDI -> M"0001",
+    ADD  -> MaskedLiteral(FN_ADD),
+    ADDI -> MaskedLiteral(FN_ADD),
     SUB -> M"0011"
   )
+  def ALU_SEL_WIDTH = range.size
+
+
+
 }
 
 object RegFileService extends MicroService with MicroArchDecodeMap {
