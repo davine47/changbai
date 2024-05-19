@@ -44,7 +44,8 @@ class ALUBitwiseArea extends Area {
 class ALUShiftArea extends Area {
   object signals extends ALUBaseBundle
   // SLL SRL SRA
-  val amplitude  = signals.b(4 downto 0).asUInt
+  val amplitude32  = signals.b(4 downto 0).asUInt
+  val amplitude = if(RiscvUnPrivSpec.XLEN == 32) amplitude32 else signals.b(5 downto 0).asUInt
   val reversed   = Mux(~(signals.uAcmd(FnService.ALU_FUNC_RANGE2).asBits.orR), Reverse(signals.a), signals.a)
   val sr = (Cat(signals.uAcmd(FnService.ALU_FUNC_RANGE2) === B("10") & reversed.msb, reversed).asSInt >> amplitude)(RiscvUnPrivSpec.XLEN-1 downto 0).asBits
   val sl = Reverse(sr)
