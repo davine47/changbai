@@ -4,12 +4,6 @@ import spinal.core.{Area, B, Bits, Bundle, False, IntToBuilder, LiteralBuilder}
 
 abstract class RiscvSpecs
 
-def RType(rawInstr: Bits): Bundle = {
-  val get = new Bundle {
-
-  }
-  get
-}
 // TODO: Configuration will inject here later
 object RiscvUnPrivSpec extends RiscvSpecs {
 

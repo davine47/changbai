@@ -45,7 +45,9 @@ object Instructions {
   def SW        = M"-----------------010-----0100011"
   def XOR       = M"0000000----------100-----0110011"
   def XORI      = M"-----------------100-----0010011"
-  def RV32I     = List(ADD, ADDI, SUB)
+  def RV32I     = List(ADD, ADDI, AND, ANDI, AUIPC, BEQ, BGE, BGEU, BLT, BLTU, BNE, EBREAK, ECALL,
+    FENCE, FENCE_TSO, JAL, JALR, LB, LBU, LH, LHU, LUI, LW, OR, ORI, PAUSE, SB, SBREAK, SCALL,
+    SH, SLL, SLT, SLTI, SLTIU, SLTU, SRA, SRL, SUB, SW, XOR, XORI)
 
   // RV64I
   def ADDIW     = M"b-----------------000-----0011011"
