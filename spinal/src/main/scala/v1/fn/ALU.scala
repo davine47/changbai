@@ -10,7 +10,7 @@ trait FnMatrix {
 
 /**
   * ALUBaseBundle:
-  *   sum_res and cmp_res will benefit to critical path
+  * Use to formalize the shapes of ALU areas' signals
   */
 abstract class ALUBaseBundle extends Bundle {
   val a = Bits(RiscvUnPrivSpec.XLEN bits)
@@ -58,11 +58,19 @@ class ALUShiftArea extends Area {
   val shift = Mux(~signals.uAcmd(FnService.ALU_FUNC_RANGE2).asBits.orR, sl, sr)
 }
 
+class ALUSumArea extends Area {
+  object signals extends ALUBaseBundle
+
+  val addSub = (signals.a.asSInt + Mux(signals.uAcmd(SrcUseSubLess.range).asBool, ~signals.b, signals.b).asSInt +
+    Mux(signals.uAcmd(SrcUseSubLess.range).asBool, S(1, RiscvUnPrivSpec.XLEN bits), S(0, RiscvUnPrivSpec.XLEN bits))).asBits
+}
+
 class ALUSumAndCmpArea extends Area {
   object signals extends ALUBaseBundle
   // ADD SUB
-  val addSub = (signals.a.asSInt + Mux(signals.uAcmd(SrcUseSubLess.range).asBool, ~signals.b, signals.b).asSInt +
-    Mux(signals.uAcmd(SrcUseSubLess.range).asBool, S(1, 32 bits), S(0, 32 bits))).asBits
+  val addSubArea = new ALUSumArea
+  addSubArea.signals.connectIn(signals)
+  val addSub = addSubArea.addSub
   // SLT SLTU
   val less = Mux(signals.a.msb === signals.b.msb, addSub.msb,
     Mux(signals.uAcmd(SrcLessUnsignedService.range).asBool, signals.b.msb, signals.a.msb))
