@@ -18,6 +18,12 @@ abstract class ALUBaseBundle extends Bundle {
   val res = Bits(RiscvUnPrivSpec.XLEN bits)
   val uAcmd = Bits(SrcUseSubLess.range.size + SrcLessUnsignedService.range.size +
     FnService.range.size bits) //TODO: need framework factory
+
+  def connectIn(that: ALUBaseBundle) = new Area {
+    a := that.a
+    b := that.b
+    uAcmd := that.uAcmd
+  }
 }
 
 class ALUBundle extends ALUBaseBundle {
@@ -51,6 +57,17 @@ class ALUShiftArea extends Area {
   val sl = Reverse(sr)
   val shift = Mux(~signals.uAcmd(FnService.ALU_FUNC_RANGE2).asBits.orR, sl, sr)
 }
+
+class ALUSumAndCmpArea extends Area {
+  object signals extends ALUBaseBundle
+  // ADD SUB
+  val addSub = (signals.a.asSInt + Mux(signals.uAcmd(SrcUseSubLess.range).asBool, ~signals.b, signals.b).asSInt +
+    Mux(signals.uAcmd(SrcUseSubLess.range).asBool, S(1, 32 bits), S(0, 32 bits))).asBits
+  // SLT SLTU
+  val less = Mux(signals.a.msb === signals.b.msb, addSub.msb,
+    Mux(signals.uAcmd(SrcLessUnsignedService.range).asBool, signals.b.msb, signals.a.msb))
+}
+
 /**
   * ALU:
   *   Implementation with Matrix micro-arch
@@ -59,26 +76,21 @@ class ALUShiftArea extends Area {
 class ALU extends Component {
 
   val io = new ALUBundle
-  // ADD SUB
-  val addSub = (io.a.asSInt + Mux(io.uAcmd(SrcUseSubLess.range).asBool, ~io.b, io.b).asSInt +
-    Mux(io.uAcmd(SrcUseSubLess.range).asBool, S(1, 32 bits), S(0, 32 bits))).asBits
 
-  // SLT SLTU
-  val less = Mux(io.a.msb === io.b.msb, addSub.msb,
-    Mux(io.uAcmd(SrcLessUnsignedService.range).asBool, io.b.msb, io.a.msb))
+  // sum and cmp area
+  val sumAndCmpArea = new ALUSumAndCmpArea
+  sumAndCmpArea.signals.connectIn(io)
+  val addSub = sumAndCmpArea.addSub
+  val less = sumAndCmpArea.less
 
   // bitwise area
   val bitwiseArea = new ALUBitwiseArea
-  bitwiseArea.signals.a := io.a
-  bitwiseArea.signals.b := io.b
-  bitwiseArea.signals.uAcmd := io.uAcmd
+  bitwiseArea.signals.connectIn(io)
   val bitwise = bitwiseArea.bitwise
 
   // shift area
   val shiftArea = new ALUShiftArea
-  shiftArea.signals.a := io.a
-  shiftArea.signals.b := io.b
-  shiftArea.signals.uAcmd := io.uAcmd
+  shiftArea.signals.connectIn(io)
   val shift = shiftArea.shift
 
   io.res := io.uAcmd(FnService.ALU_FUNC_RANGE1).asBits.mux(
