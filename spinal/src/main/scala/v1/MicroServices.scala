@@ -104,7 +104,7 @@ object RegFileService extends MicroService with MicroArchDecodeMap {
 object DecodeService extends MicroService {
 
   // an implicit service order here
-  val serviceList = List[MicroArchDecodeMap](SrcLessUnsignedService, FnService)
+  val serviceList = List[MicroArchDecodeMap](RegFileService, SrcUseSubLess, SrcLessUnsignedService, FnService)
   val stringList = ArrayBuffer[String]()
   serviceList.foreach(x => {
     stringList.append(x.default.getBitsString(x.range.size, '-'))

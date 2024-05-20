@@ -76,12 +76,34 @@ class ALUSumAndCmpArea extends Area {
     Mux(signals.uAcmd(SrcLessUnsignedService.range).asBool, signals.b.msb, signals.a.msb))
 }
 
+class ALUSum extends Component {
+  val io = new ALUBundle
+
+  val sumArea = new ALUSumArea
+  sumArea.signals.connectIn(io)
+  io.res := sumArea.addSub
+}
+
+class ALULite extends Component {
+  val io = new ALUBundle
+
+  // sum and cmp area
+  val sumAndCmpArea = new ALUSumAndCmpArea
+  sumAndCmpArea.signals.connectIn(io)
+  val addSub = sumAndCmpArea.addSub
+  val less = sumAndCmpArea.less
+
+  io.res := io.uAcmd(FnService.ALU_FUNC_RANGE1).lsb.asBits.mux(
+    B("0") -> addSub,
+    B("1") -> less.asBits(RiscvUnPrivSpec.XLEN bit)
+  )
+}
+
 /**
   * ALU:
   *   Implementation with Matrix micro-arch
-  * @param position
   */
-class ALU extends Component {
+class ALUFull extends Component {
 
   val io = new ALUBundle
 
