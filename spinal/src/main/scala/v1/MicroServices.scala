@@ -49,7 +49,6 @@ object FnService extends MicroService with MicroArchDecodeMap {
     SRLI  -> MaskedLiteral(FN_SRL),
     SRAI  -> MaskedLiteral(FN_SRA)
   )
-  def ALU_SEL_WIDTH = range.size
   def ALU_FUNC_RANGE1 = (3 downto 2)
   def ALU_FUNC_RANGE2 = (1 downto 0)
 
@@ -94,7 +93,7 @@ object SrcUseSubLess extends MicroService with MicroArchDecodeMap {
 
 object RegFileService extends MicroService with MicroArchDecodeMap {
 
-  override def range: Range.Inclusive = (6 downto 5)
+  override def range: Range.Inclusive = (7 downto 6)
   override def default = M"00"
   override def table: Array[(MaskedLiteral, MaskedLiteral)] = Array(
     ADD -> M"11",
@@ -105,21 +104,21 @@ object RegFileService extends MicroService with MicroArchDecodeMap {
 object DecodeService extends MicroService {
 
   // an implicit service order here
-  val serviceList = List[MicroArchDecodeMap](RegFileService, SrcLessUnsignedService, FnService)
+  val serviceList = List[MicroArchDecodeMap](SrcLessUnsignedService, FnService)
   val stringList = ArrayBuffer[String]()
   serviceList.foreach(x => {
     stringList.append(x.default.getBitsString(x.range.size, '-'))
   })
   val mergedDefaultML = MaskedLiteral(stringList.reduce(_ + _))
   val targetWidth = mergedDefaultML.width
-
   // solve decode op
   val instMapOpcode = mutable.LinkedHashMap[MaskedLiteral, MaskedLiteral]()
-  RV32I.foreach(inst => {
+  RV64I.foreach(inst => {
     val tmpStringList = ArrayBuffer[String]()
     serviceList.foreach(s => {
       val tmpMap = s.table.toMap
-      tmpStringList.append(tmpMap.getOrElse(inst, s.default).getBitsString(s.range.size, '-'))
+      val p = tmpMap.getOrElse(inst, s.default).getBitsString(s.range.size, '-')
+      tmpStringList.append(p)
     })
     instMapOpcode.put(inst, MaskedLiteral(tmpStringList.reduce(_ + _)))
   })

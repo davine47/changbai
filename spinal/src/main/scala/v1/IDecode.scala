@@ -20,9 +20,9 @@ class IDecode extends Component {
   spec.setDefault(Masked(DecodeService.mergedDefaultML))
 
   val serviceList = List(FnService)
-  RV32I.foreach(inst => {
+  RV64I.foreach(inst => {
     spec.addNeeds(Masked(inst), Masked(DecodeService.instMapOpcode.get(inst).get))
   })
-  io.result := spec.build(io.rawInst, RV32I.flatMap(x => List(Masked(x.asBits()))))
+  io.result := spec.build(io.rawInst, RV64I.flatMap(x => List(Masked(x.asBits()))))
 
 }
