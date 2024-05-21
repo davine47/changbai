@@ -29,7 +29,7 @@ object IDecoder extends App{
     }
 }
 
-object genTestChangbai {
+object Print {
   def main(args: Array[String]) {
     println("test Gen Changbai......")
   }

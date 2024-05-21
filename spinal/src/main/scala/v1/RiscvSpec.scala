@@ -28,6 +28,8 @@ object RiscvUnPrivSpec extends RiscvSpecs {
 
   case class IMM(instruction: Bits) extends Area {
     // immediates
+    def immExtBits = if(RiscvUnPrivSpec.XLEN == 64) 32 else 0
+
     def i = instruction(31 downto 20)
 
     def h = instruction(31 downto 24)
@@ -43,15 +45,17 @@ object RiscvUnPrivSpec extends RiscvSpecs {
     def z = instruction(19 downto 15)
 
     // sign-extend immediates
-    def i_sext = B((19 downto 0) -> i(11)) ## i
+    def i_sext = B((19+immExtBits downto 0) -> i(11)) ## i
 
-    def h_sext = B((23 downto 0) -> h(7)) ## h
+    def h_sext = B((23+immExtBits downto 0) -> h(7)) ## h
 
-    def s_sext = B((19 downto 0) -> s(11)) ## s
+    def s_sext = B((19+immExtBits downto 0) -> s(11)) ## s
 
-    def b_sext = B((18 downto 0) -> b(11)) ## b ## False
+    def b_sext = B((18+immExtBits downto 0) -> b(11)) ## b ## False
 
-    def j_sext = B((10 downto 0) -> j(19)) ## j ## False
+    def u_sext = B((0+immExtBits downto 0) -> u.msb) ## u(30 downto 0)
+
+    def j_sext = B((10+immExtBits downto 0) -> j(19)) ## j ## False
   }
 
 }
