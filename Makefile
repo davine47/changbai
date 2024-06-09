@@ -10,6 +10,12 @@ v1-regfile:
 v1-decoder:
 	mill -i changbai.spinal.test.runMain changbai.v1.test.IDecoder
 
+v1-alu:
+	mill -i changbai.spinal.test.runMain changbai.v1.test.ALU
+
+v1-print:
+	mill -i changbai.spinal.test.runMain changbai.v1.test.Print
+
 hello:
 	mill -i changbai.spinal.runMain changbai.sayHello
 
