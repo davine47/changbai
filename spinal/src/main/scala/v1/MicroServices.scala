@@ -13,6 +13,14 @@ trait MicroArchDecodeMap {
   def table: Array[(MaskedLiteral, MaskedLiteral)]
 }
 
+object SimpleRsService extends MicroService {
+  def TAG_WIDTH = 4
+  def RS_ENTRY_NUM = 4
+  def FULL_ALU_NUM = 2
+  def LITE_ALU_NUM = 1
+  def SUM_ALU_NUM = 1
+}
+
 object FnService extends MicroService with MicroArchDecodeMap {
 
   def FN_ADD_SUB = "0000"

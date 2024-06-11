@@ -17,7 +17,7 @@ abstract class ALUBaseBundle extends Bundle {
   val b = Bits(RiscvUnPrivSpec.XLEN bits)
   val res = Bits(RiscvUnPrivSpec.XLEN bits)
   val uAcmd = Bits(SrcUseSubLess.range.size + SrcLessUnsignedService.range.size +
-    FnService.range.size bits) //TODO: need framework factory
+    FnService.range.size bits) //TODO: [optimize] need framework factory
 
   def connectIn(that: ALUBaseBundle) = new Area {
     a := that.a
