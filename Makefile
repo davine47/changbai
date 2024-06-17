@@ -16,6 +16,9 @@ v1-alu:
 v1-print:
 	mill -i changbai.spinal.test.runMain changbai.v1.test.Print
 
+v1-play:
+	mill -i changbai.spinal.test.runMain changbai.v1.test.Play
+
 hello:
 	mill -i changbai.spinal.runMain changbai.sayHello
 

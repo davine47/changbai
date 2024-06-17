@@ -1,6 +1,8 @@
 package v1
 import Instructions._
 import spinal.core.{IntToBuilder, LiteralBuilder, MaskedLiteral}
+import spinal.lib._
+import spinal.core._
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
@@ -11,6 +13,11 @@ trait MicroArchDecodeMap {
   def range: Range.Inclusive
   def default: MaskedLiteral
   def table: Array[(MaskedLiteral, MaskedLiteral)]
+}
+
+object SimpleRobService extends  MicroService {
+  val ROB_ENTRY_NUM = 64
+  val ROB_IDX_WIDTH = log2Up(ROB_ENTRY_NUM)
 }
 
 object SimpleRsService extends MicroService {

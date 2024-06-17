@@ -2,33 +2,38 @@ package v1.pipe
 
 import spinal.core._
 import spinal.lib._
-import v1.{RiscvUnPrivSpec, SimpleRsService}
+import v1.{RiscvUnPrivSpec, SimpleRobService, SimpleRsService}
 
-class SimpleRs(entryCounts : Int = 16) extends Component {
+class SimpleAluRs(entryCounts : Int = 4) extends Component {
   val io = new Bundle {
-    val updateSrc0 = Flow(new RsUpdateMicroEvent)
-    val updateSrc1 = Flow(new RsUpdateMicroEvent)
-
+    // bus channels
+    val updateE0 = Flow(new RsUpdateMicroEvent)
+    val updateE1 = Flow(new RsUpdateMicroEvent)
+    val updateE2 = Flow(new RsUpdateMicroEvent)
+    // allocate req/resp
+    val allocateReqE0 = Stream(new RsAllocateReqMicroEvent)
   }
 
   case class RsEntry() extends Bundle {
-    val tag = UInt(SimpleRsService.TAG_WIDTH bits)
-    val valid = Bool()
+    val tag0 = UInt(SimpleRsService.TAG_WIDTH bits)
+    val tag1 = UInt(SimpleRsService.TAG_WIDTH bits)
+    val valid0 = Bool()
+    val valid1 = Bool()
+    val robIdx = UInt(SimpleRobService.ROB_IDX_WIDTH bits)
     // val associate = UInt(log2Up(8) bits)
   }
 
+  // base ctrl regs
   val entries = Vec.fill(entryCounts)(Reg(RsEntry()))
+
+  // update
+
+  // hit
   val entryPair = entries.sliding(2, 2).toSeq
-  val entryPairValid = entries.sliding(2, 2).collect {
-    case Seq(a, b) => a.valid | b.valid
-  }.toSeq
 
-  val hitEntryTags = entryPair.map(x => Seq((x(0).tag === io.updateSrc0.tag) & io.updateSrc0.valid,
-    (x(1).tag === io.updateSrc1.tag) & io.updateSrc1.valid))
-  entryPair.zipWithIndex.foreach(x => {
-    x._1(0).valid := hitEntryTags(x._2).head
-    x._1(1).valid := hitEntryTags(x._2).tail
-  })
+  // issue
 
-  // issue and release
+
+
+
 }

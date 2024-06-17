@@ -4,10 +4,10 @@ TOPLEVEL_LANG ?= verilog
 VERILOG_SOURCES += $(shell find $(PWD)/../../examples -name "*.v" -or -name "*.sv")
 VERILOG_SOURCES += $(shell find $(PWD)/../../changbaiTest -name "*.v" -or -name "*.sv")
 # verilog top module name
-TOPLEVEL ?= DecodingSpecExample
+TOPLEVEL ?= Myplay
 
 # python test file name
-MODULE ?= test_decoder
+MODULE ?= test_play
 
 EXTRA_ARGS += --trace --trace-structs --timescale 1ns/1ns
 
