@@ -6,7 +6,7 @@ import spinal.core.{B, Bits, Component, HardType, IntToBuilder, LiteralBuilder, 
 import spinal.lib.experimental.chisel.Bundle
 import spinal.lib.logic.{DecodingSpec, Masked}
 
-class RegFileExample extends Component{
+class RegFileExample extends Component {
 
   val io = new Bundle {
     val raddr0 = in UInt(5 bits)
@@ -76,4 +76,6 @@ object AdderExample extends App{
       topLevel
     }
 }
+
+
 

@@ -3,7 +3,8 @@ import spinal.core._
 import spinal.lib._
 
 class MyPlay extends Component {
-  val a = in UInt(8 bits)
-  val b = out UInt(log2Up(8) bits)
-  b := OHToUInt(a)
+  val a = in port Vec.fill(8)(UInt(8 bits))
+  val mask = in port UInt(8 bits)
+  val b = out port UInt(8 bits)
+  b := PriorityMux(mask.asBools, a)
 }

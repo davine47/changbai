@@ -3,6 +3,7 @@ package changbai.v1.test
 import spinal.core.{SpinalConfig, SystemVerilog}
 import v1.IDecode
 import v1.fn.{ALUFull, ALULite, ALUSum}
+import v1.pipe.SimpleAluRs
 
 object ALU extends App{
   println("Gen ChangBai ALU......")
@@ -27,6 +28,17 @@ object IDecoder extends App{
       val topLevel = new IDecode
       topLevel
     }
+}
+
+object SimpleRs {
+  def main(args: Array[String]) {
+    println("test Gen SimpleRs......")
+    SpinalConfig(mode = SystemVerilog, targetDirectory = "changbaiTest", genLineComments = false, oneFilePerComponent = true)
+      .generate {
+        val topLevel = new SimpleAluRs()
+        topLevel
+      }
+  }
 }
 
 object Play {
