@@ -1,6 +1,7 @@
 test:
-	mill emulator[sandbox.Hello,sandbox.HelloConfig].mfccompiler.compile
-
+	mill emulator[sandbox.Hello,sandbox.HelloConfig,DiplomacyGenerator].mfccompiler.compile
+test1:
+	mill emulator[examples.Adder,sandbox.HelloConfig,SimpleGenerator].mfccompiler.compile
 v1-adder:
 	mill -i changbai.spinal.runMain v1.AdderExample
 
@@ -27,3 +28,6 @@ changbai:
 
 idea:
 	mill mill.idea.GenIdea/idea
+
+clean:
+	rm -rf out/ *.lst changbaiTest/

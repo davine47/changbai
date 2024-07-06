@@ -132,7 +132,7 @@ object vexriscv extends HasSpinalhdl with SbtModule{
   override def moduleDeps: Seq[JavaModule] = super.moduleDeps
 }
 
-object changbai extends Module{
+class Changbai(chiselGenerator: String = "SimpleGenerator") extends Module{
 
   object chisel extends Cross[ChiselModules]("chisel", "chisel3")
   trait ChiselModules extends HasChisel with SbtModule {
@@ -141,7 +141,7 @@ object changbai extends Module{
     override def scalacOptions = T(super.scalacOptions() ++ chiselPluginJar().map(path => s"-Xplugin:${path.path}"))
 
     override def millSourcePath = os.pwd / "chisel"
-    override def mainClass = T(Some("freechips.rocketchip.diplomacy.Main"))
+    override def mainClass = T(Some(s"generators.${chiselGenerator}"))
 
     def rocketModule = rocketchip(crossValue)
     override def moduleDeps: Seq[JavaModule] = super.moduleDeps ++ Seq(rocketModule)
@@ -157,11 +157,15 @@ object changbai extends Module{
   }
 }
 
-trait Emulator extends Cross.Module2[String, String] {
+object changbai extends Changbai
+
+trait Emulator extends Cross.Module3[String, String, String] {
   
   val top: String = crossValue
   val config: String = crossValue2
+  val chiselGenerator: String = crossValue3
 
+  val changbai = new Changbai(chiselGenerator)
   object generator extends Module {
 
     def elaborate = T {
@@ -219,5 +223,6 @@ trait Emulator extends Cross.Module2[String, String] {
 
 object emulator extends Cross[Emulator](
 
-  ("sandbox.Hello", "sandbox.HelloConfig")
+  ("sandbox.Hello", "sandbox.HelloConfig", "DiplomacyGenerator"),
+  ("examples.Adder", "sandbox.HelloConfig", "SimpleGenerator")
 )
