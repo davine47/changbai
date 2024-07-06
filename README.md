@@ -37,5 +37,4 @@ then setup pycharm according global python3 path
 ```shell
 $ which python3
 ```
-
 We recommand to use python versions which less than 3.12 because of distutils module dependence.
