@@ -1,6 +1,6 @@
-[submodule "chisel/rocket-chip"]
-	path = chisel/rocket-chip
-	url = https://github.com/chipsalliance/rocket-chip.git
 [submodule "spinal/VexRiscv"]
 	path = spinal/VexRiscv
 	url = https://github.com/SpinalHDL/VexRiscv.git
+[submodule "chisel/rocket-chip"]
+	path = chisel/rocket-chip
+	url = git@github.com:davine47/rocket-chip.git
