@@ -1,0 +1,47 @@
+*.log
+*.bak
+*.bak.*
+
+# DVT
+.dvt/build.config.xml
+.dvt/*.ls
+
+# Emacs
+*~
+
+# Not sure what these are, but they appear when interrupting the test script
+.bpad
+
+# Framework files
+.__*testsuite.sv
+.svunit.f
+.testrunner.sv
+run.log
+tests.xml
+
+# IUS specific files
+INCA_libs
+run.history
+*.history
+
+# Xcelium specific files
+xcelium.d
+
+# dsim
+dsim.env
+dsim_work/
+metrics.db
+metrics_history.db
+
+# QuestaSim/ModelSim
+work/
+qrun.out/
+
+# Verilator
+obj_dir/
+
+# Vivado Simulator
+xsim.dir/
+xvlog.pb
+xelab.pb
+xsim*.jou

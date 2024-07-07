@@ -1,0 +1,72 @@
+name: CI
+
+on: [push, pull_request]
+
+env:
+  VERILATOR_VERSION: v5.024
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+
+      - name: Install g++ 10
+        run: sudo apt-get install -y g++-10
+            && echo "CXX=g++-10" >> "$GITHUB_ENV"
+
+      - name: Install Verilator dependencies
+        run: |
+            sudo apt-get install -y \
+                git help2man perl python3 make \
+                libfl2 \
+                libfl-dev \
+                zlibc zlib1g zlib1g-dev \
+                git autoconf flex bison
+
+      - name: Cache Verilator
+        id: cache-verilator
+        uses: actions/cache@v3
+        with:
+          path: /opt/verilator
+          key: verilator-${{ env.VERILATOR_VERSION }}-${{ runner.os }}
+
+      - name: Clone Verilator
+        if: steps.cache-verilator.outputs.cache-hit != 'true'
+        run: git clone https://github.com/verilator/verilator $HOME/verilator
+            && cd $HOME/verilator
+            && git checkout $VERILATOR_VERSION
+
+      - name: Build Verilator
+        if: steps.cache-verilator.outputs.cache-hit != 'true'
+        run: cd $HOME/verilator
+            && autoconf
+            && ./configure --prefix /opt/verilator
+            && make -j `nproc`
+
+      - name: Install Verilator
+        if: steps.cache-verilator.outputs.cache-hit != 'true'
+        run: cd $HOME/verilator
+            && sudo make install
+
+      - name: Add Verilator to $PATH
+        run: echo "/opt/verilator/bin" >> $GITHUB_PATH
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.6"
+
+      - name: Set up testing environment
+        run: pip install -r test/requirements.txt
+
+      - name: Install direnv
+        run: sudo apt-get install -y direnv
+
+      - name: Run tests
+        run: |
+          cd test
+          direnv allow
+          direnv exec . pytest
