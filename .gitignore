@@ -1,6 +1,7 @@
 .idea/
 out/
 target/
+work/
 project/target
 docs/generated
 docs-target/
