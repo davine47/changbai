@@ -1,11 +1,11 @@
-package changbai
+package changbaiV1
 import spinal.core._
 import spinal.lib._
 import lib._
 
-class Changbai extends Component with Pipeline {
+class ChangbaiV1 extends Component with Pipeline {
 
-  type T = Changbai
+  type T = ChangbaiV1
   def newStage(): Stage = { val s = new Stage; stages += s; s }
   val stage1 = newStage()
   val stage2 = newStage()
@@ -15,18 +15,18 @@ class Changbai extends Component with Pipeline {
   plugins += new SingPlugin
 }
 
-class SingPlugin extends Plugin[Changbai] {
+class SingPlugin extends Plugin[ChangbaiV1] {
 
   object RES extends Stageable(UInt(32 bits))
   object FORWARD_A extends Stageable(UInt(32 bits))
   object RES2 extends Stageable(UInt(32 bits))
   object RES3 extends Stageable(UInt(32 bits))
 
-  override def setup(pipeline: Changbai): Unit = {
+  override def setup(pipeline: ChangbaiV1): Unit = {
     println("software setup")
   }
 
-  override def build(pipeline: Changbai): Unit = {
+  override def build(pipeline: ChangbaiV1): Unit = {
     import pipeline._
     stage1 plug new Area {
       import stage1._
@@ -63,7 +63,7 @@ object genChangbai {
     println("Gen Changbai......")
     SpinalConfig(mode = SystemVerilog, targetDirectory = "changbai", oneFilePerComponent = true)
       .generate {
-        val topLevel = new Changbai
+        val topLevel = new ChangbaiV1
         topLevel
       }
   }

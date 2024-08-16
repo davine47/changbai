@@ -151,13 +151,13 @@ class Changbai(chiselGenerator: String = "SimpleGenerator") extends Module{
     override def millSourcePath = os.pwd / "spinal"
     def vexriscvModule = vexriscv
 
-    object test extends SbtModuleTests with TestModule.ScalaTest
+    object test extends SbtTests with TestModule.ScalaTest
 
     override def moduleDeps: Seq[JavaModule] = super.moduleDeps ++ Seq(vexriscvModule)
   }
 }
 
-object changbai extends Changbai
+object changbaiV1 extends Changbai
 
 trait Emulator extends Cross.Module3[String, String, String] {
   
@@ -165,14 +165,14 @@ trait Emulator extends Cross.Module3[String, String, String] {
   val config: String = crossValue2
   val chiselGenerator: String = crossValue3
 
-  val changbai = new Changbai(chiselGenerator)
+  val cb = new Changbai(chiselGenerator)
   object generator extends Module {
 
     def elaborate = T {
       os.proc(
         mill.util.Jvm.javaExe,
         "-jar",
-        changbai.chisel("chisel").assembly().path,
+        cb.chisel("chisel").assembly().path,
         "--dir", T.dest.toString,
         "--top", top,
         "--config", config,

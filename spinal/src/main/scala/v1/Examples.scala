@@ -1,7 +1,5 @@
 package v1
 
-import changbai.Changbai
-import spinal.core.internals.Operator
 import spinal.core.{B, Bits, Component, HardType, IntToBuilder, LiteralBuilder, Mem, SpinalConfig, SpinalVerilog, SystemVerilog, U, UInt, Verilator, in, out}
 import spinal.lib.experimental.chisel.Bundle
 import spinal.lib.logic.{DecodingSpec, Masked}

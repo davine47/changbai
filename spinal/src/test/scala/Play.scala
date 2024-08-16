@@ -1,4 +1,4 @@
-package changbai.v1.test
+package changbaiV1.v1.test
 import spinal.core._
 import spinal.lib._
 
