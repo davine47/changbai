@@ -3,28 +3,28 @@ test:
 test1:
 	mill emulator[examples.Adder,sandbox.HelloConfig,SimpleGenerator].mfccompiler.compile
 v1-adder:
-	mill -i changbai.spinal.runMain v1.AdderExample
+	mill -i changbaiV1.spinal.runMain v1.AdderExample
 
 v1-regfile:
-	mill -i changbai.spinal.runMain v1.RegFileExample
+	mill -i changbaiV1.spinal.runMain v1.RegFileExample
 
 v1-decoder:
-	mill -i changbai.spinal.test.runMain changbai.v1.test.IDecoder
+	mill -i changbaiV1.spinal.test.runMain changbaiV1.v1.test.IDecoder
 
 v1-alu:
-	mill -i changbai.spinal.test.runMain changbai.v1.test.ALU
+	mill -i changbaiV1.spinal.test.runMain changbaiV1.v1.test.ALU
 
 v1-print:
-	mill -i changbai.spinal.test.runMain changbai.v1.test.Print
+	mill -i changbaiV1.spinal.test.runMain changbaiV1.v1.test.Print
 
 v1-play:
-	mill -i changbai.spinal.test.runMain changbai.v1.test.Play
+	mill -i changbaiV1.spinal.test.runMain changbaiV1.v1.test.Play
 
 hello:
-	mill -i changbai.spinal.runMain changbai.sayHello
+	mill -i changbaiV1.spinal.runMain changbaiV1.sayHello
 
 changbai:
-	mill -i changbai.spinal.runMain changbai.genChangbai
+	mill -i changbaiV1.spinal.runMain changbaiV1.genChangbai
 
 idea:
 	mill mill.idea.GenIdea/idea
