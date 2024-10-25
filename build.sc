@@ -151,7 +151,7 @@ class Changbai(chiselGenerator: String = "SimpleGenerator") extends Module{
     override def millSourcePath = os.pwd / "spinal"
     def vexriscvModule = vexriscv
 
-    object test extends SbtTests with TestModule.ScalaTest
+    object test extends SbtModuleTests with TestModule.ScalaTest
 
     override def moduleDeps: Seq[JavaModule] = super.moduleDeps ++ Seq(vexriscvModule)
   }
