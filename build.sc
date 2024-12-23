@@ -1,10 +1,12 @@
 import mill._
 import scalalib._
-import $file.`chisel`.`rocket-chip`.common
-import $file.`chisel`.`rocket-chip`.cde.common
-import $file.`chisel`.`rocket-chip`.hardfloat.build
+import $file.chisel.`rocket-chip`.common
+import $file.chisel.`rocket-chip`.cde.common
+import $file.chisel.`rocket-chip`.hardfloat.common
 
 val spinalVersion = "1.9.4"
+
+val pwd = os.Path(sys.env("MILL_WORKSPACE_ROOT"))
 
 def relatedScalaVersion = "2.13.10"
 def chiselScalaVersion = "2.13.10"
@@ -79,11 +81,11 @@ trait HasChisel extends SbtModule with Cross.Module[String] {
 object rocketchip extends Cross[RocketChip]("chisel", "chisel3")
 
 trait RocketChip
-  extends millbuild.`chisel`.`rocket-chip`.common.RocketChipModule
+  extends $file.`chisel`.`rocket-chip`.common.RocketChipModule
     with HasChisel {
-  def scalaVersion: T[String] = T(defaultScalaVersion)
+  override def scalaVersion: T[String] = T(defaultScalaVersion)
 
-  override def millSourcePath = os.pwd / "chisel" /"rocket-chip"
+  override def millSourcePath = pwd / "chisel" /"rocket-chip"
 
   def macrosModule = macros
 
@@ -98,7 +100,7 @@ trait RocketChip
   object macros extends Macros
 
   trait Macros
-    extends millbuild.`chisel`.`rocket-chip`.common.MacrosModule
+    extends $file.`chisel`.`rocket-chip`.common.MacrosModule
       with SbtModule {
 
     def scalaVersion: T[String] = T(defaultScalaVersion)
@@ -109,21 +111,21 @@ trait RocketChip
   object hardfloat extends Cross[Hardfloat](crossValue)
 
   trait Hardfloat
-    extends millbuild.`chisel`.`rocket-chip`.hardfloat.common.HardfloatModule with HasChisel {
+    extends $file.`chisel`.`rocket-chip`.hardfloat.common.HardfloatModule with HasChisel {
 
-    def scalaVersion: T[String] = T(defaultScalaVersion)
+    override def scalaVersion: T[String] = T(defaultScalaVersion)
 
-    override def millSourcePath = os.pwd / "chisel" /"rocket-chip" / "hardfloat" / "hardfloat"
+    override def millSourcePath = pwd / "chisel" /"rocket-chip" / "hardfloat" / "hardfloat"
 
   }
 
   object cde extends CDE
 
-  trait CDE extends millbuild.`chisel`.`rocket-chip`.cde.common.CDEModule with ScalaModule {
+  trait CDE extends $file.`chisel`.`rocket-chip`.cde.common.CDEModule with ScalaModule {
 
     def scalaVersion: T[String] = T(defaultScalaVersion)
 
-    override def millSourcePath = os.pwd / "chisel" / "rocket-chip" / "cde" / "cde"
+    override def millSourcePath = pwd / "chisel" / "rocket-chip" / "cde" / "cde"
   }
 }
 
@@ -140,7 +142,7 @@ class Changbai(chiselGenerator: String = "SimpleGenerator") extends Module{
     def chiselPluginJar: T[Option[PathRef]]
     override def scalacOptions = T(super.scalacOptions() ++ chiselPluginJar().map(path => s"-Xplugin:${path.path}"))
 
-    override def millSourcePath = os.pwd / "chisel"
+    override def millSourcePath = pwd / "chisel"
     override def mainClass = T(Some(s"generators.${chiselGenerator}"))
 
     def rocketModule = rocketchip(crossValue)
@@ -148,7 +150,7 @@ class Changbai(chiselGenerator: String = "SimpleGenerator") extends Module{
   }
 
   object spinal extends HasSpinalhdl with SbtModule{
-    override def millSourcePath = os.pwd / "spinal"
+    override def millSourcePath = pwd / "spinal"
     def vexriscvModule = vexriscv
 
     object test extends SbtModuleTests with TestModule.ScalaTest
