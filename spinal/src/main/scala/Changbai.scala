@@ -11,9 +11,6 @@ object sayHello {
 object genChangbai {
   def main(args: Array[String]) {
     println("Gen Changbai......")
-    SpinalConfig(mode = SystemVerilog, targetDirectory = "changbai", oneFilePerComponent = true)
-      .generate {
-      }
   }
 }
 

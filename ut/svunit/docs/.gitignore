@@ -1,6 +1,0 @@
-# Python
-__pycache__
-.venv/
-
-# Sphinx
-build/
