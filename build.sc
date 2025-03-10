@@ -4,7 +4,7 @@ import $file.chisel.`rocket-chip`.common
 import $file.chisel.`rocket-chip`.cde.common
 import $file.chisel.`rocket-chip`.hardfloat.common
 
-val spinalVersion = "1.9.4"
+val spinalVersion = "1.11.0"
 
 val pwd = os.Path(sys.env("MILL_WORKSPACE_ROOT"))
 

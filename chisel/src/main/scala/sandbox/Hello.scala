@@ -16,7 +16,18 @@ class TestAggregate2 extends Bundle {
   val value = UInt(3.W)
 }
 
-class Hello()(implicit p:Parameters) extends LazyModule {
+class Hello()(implicit p: Parameters) extends LazyModule {
+  lazy val  module = new Impl
+  class Impl extends LazyModuleImp(this) {
+    val io = IO(new Bundle {
+      val i = Input(UInt(8.W))
+      val o = Output(UInt(8.W))
+    })
+    io.o := io.i + 6.U
+  }
+}
+
+class Hellou()(implicit p:Parameters) extends LazyModule {
   lazy val  module = new Impl
   class Impl extends LazyModuleImp(this) {
 
