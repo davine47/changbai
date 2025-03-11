@@ -23,15 +23,9 @@ val defaultSpinalhdlVersions = Map(
 
 def defaultChiselVersions(chiselVersion: String) = chiselVersion match {
   case "chisel" => Map(
-    "chisel"        -> ivy"org.chipsalliance::chisel:6.6.0",
+    "chisel"        -> ivy"org.chipsalliance::chisel:7.0.0-M2",
     "chisel-plugin" -> ivy"org.chipsalliance:::chisel-plugin:6.6.0",
     "chiseltest"    -> ivy"edu.berkeley.cs::chiseltest:6.0.0",
-    "mainargs"      -> ivy"com.lihaoyi::mainargs:0.5.0"
-  )
-  case "chisel3" => Map(
-    "chisel"        -> ivy"edu.berkeley.cs::chisel3:3.6.0",
-    "chisel-plugin" -> ivy"edu.berkeley.cs:::chisel3-plugin:3.6.0",
-    "chiseltest"    -> ivy"edu.berkeley.cs::chiseltest:0.6.2",
     "mainargs"      -> ivy"com.lihaoyi::mainargs:0.5.0"
   )
 }
@@ -78,7 +72,7 @@ trait HasChisel extends SbtModule with Cross.Module[String] {
   override def scalacPluginIvyDeps = super.scalacPluginIvyDeps() ++ chiselPluginDeps
 }
 
-object rocketchip extends Cross[RocketChip]("chisel", "chisel3")
+object rocketchip extends Cross[RocketChip]("chisel")
 
 trait RocketChip
   extends $file.`chisel`.`rocket-chip`.common.RocketChipModule
@@ -136,7 +130,7 @@ object vexriscv extends HasSpinalhdl with SbtModule{
 
 class Changbai(chiselGenerator: String = "SimpleGenerator") extends Module{
 
-  object chisel extends Cross[ChiselModules]("chisel", "chisel3")
+  object chisel extends Cross[ChiselModules]("chisel")
   trait ChiselModules extends HasChisel with SbtModule {
 
     def chiselPluginJar: T[Option[PathRef]]
