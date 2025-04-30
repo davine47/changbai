@@ -1,7 +1,7 @@
 package generators
 
 import chisel3.RawModule
-import chisel3.stage.ChiselGeneratorAnnotation
+import chisel3.stage.{ChiselGeneratorAnnotation, SourceRootAnnotation}
 import chisel3.stage.phases.{Convert, Elaborate}
 import firrtl.AnnotationSeq
 import firrtl.options.TargetDirAnnotation

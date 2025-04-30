@@ -24,6 +24,7 @@ class Hello()(implicit p: Parameters) extends LazyModule {
       val o = Output(UInt(8.W))
     })
     io.o := io.i + 6.U
+    assert(io.i > 5.U)
   }
 }
 

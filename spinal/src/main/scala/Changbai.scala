@@ -17,11 +17,16 @@ class CoreTop extends Component with Pipeline {
 
 }
 
+case class TestBundle() extends Bundle {
+  val mul = UInt(8 bit)
+}
+
 class Test extends Component {
   val io = new Bundle {
     val in = spinal.core.in Bool()
     val out = spinal.core.out Bool()
   }
+  val a = Stream(TestBundle())
   noIoPrefix()
   withoutReservedKeywords = true
   io.out := False | io.in

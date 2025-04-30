@@ -199,7 +199,7 @@ trait Emulator extends Cross.Module3[String, String, String] {
         "--split-verilog",
         "--preserve-values=named",
         "--output-annotation-file=mfc.anno.json",
-        s"-o=${T.dest}"
+        s"-o=/Users/wenjunnan/projects/yuanqi/targets/changbai/dest"
       ).call(T.dest)
       PathRef(T.dest)
     }
