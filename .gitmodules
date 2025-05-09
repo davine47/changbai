@@ -1,9 +1,3 @@
-[submodule "dependencies/chisel"]
-	path = dependencies/chisel
-	url = https://github.com/davine47/chisel.git
-[submodule "dependencies/SpinalHDL"]
-	path = dependencies/SpinalHDL
-	url = https://github.com/davine47/SpinalHDL.git
-[submodule "dependencies/VexRiscv"]
-	path = dependencies/VexRiscv
-	url = https://github.com/SpinalHDL/VexRiscv.git
+[submodule "chisel/rocket-chip"]
+	path = chisel/rocket-chip
+	url = https://github.com/davine47/rocket-chip.git
