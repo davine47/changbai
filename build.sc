@@ -23,7 +23,7 @@ val defaultSpinalhdlVersions = Map(
 
 def defaultChiselVersions(chiselVersion: String) = chiselVersion match {
   case "chisel" => Map(
-    "chisel"        -> ivy"org.chipsalliance::chisel:7.0.0-M2",
+    "chisel"        -> ivy"org.chipsalliance::chisel:6.6.0",
     "chisel-plugin" -> ivy"org.chipsalliance:::chisel-plugin:6.6.0",
     "chiseltest"    -> ivy"edu.berkeley.cs::chiseltest:6.0.0",
     "mainargs"      -> ivy"com.lihaoyi::mainargs:0.5.0"
