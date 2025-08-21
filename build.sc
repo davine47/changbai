@@ -9,7 +9,7 @@ val spinalVersion = "1.11.0"
 val pwd = os.Path(sys.env("MILL_WORKSPACE_ROOT"))
 
 def relatedScalaVersion = "2.13.10"
-def chiselScalaVersion = "2.13.15"
+def chiselScalaVersion = "2.13.16"
 def spinalhdlScalaVersion = "2.11.12"
 
 val defaultSpinalhdlVersions = Map(
@@ -23,9 +23,8 @@ val defaultSpinalhdlVersions = Map(
 
 def defaultChiselVersions(chiselVersion: String) = chiselVersion match {
   case "chisel" => Map(
-    "chisel"        -> ivy"org.chipsalliance::chisel:6.6.0",
-    "chisel-plugin" -> ivy"org.chipsalliance:::chisel-plugin:6.6.0",
-    "chiseltest"    -> ivy"edu.berkeley.cs::chiseltest:6.0.0",
+    "chisel"        -> ivy"org.chipsalliance::chisel:7.0.0-RC1",
+    "chisel-plugin" -> ivy"org.chipsalliance:::chisel-plugin:7.0.0-RC1",
     "mainargs"      -> ivy"com.lihaoyi::mainargs:0.5.0"
   )
 }
