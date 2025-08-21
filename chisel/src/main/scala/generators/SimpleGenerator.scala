@@ -5,15 +5,12 @@ import chisel3.stage.ChiselGeneratorAnnotation
 import chisel3.stage.phases.{Convert, Elaborate}
 import firrtl.AnnotationSeq
 import firrtl.options.TargetDirAnnotation
-import freechips.rocketchip.diplomacy.LazyModule
 import mainargs.{ParserForMethods, arg, main}
-import org.chipsalliance.cde.config.{Config, Parameters}
 
 object SimpleGenerator {
   @main def elaborate(
                        @arg(name = "dir", doc = "output directory") dir: String,
                        @arg(name = "top", doc = "top Module or LazyModule fullpath") top: String,
-                       @arg(name = "config", doc = "CDE configs") config: Seq[String]
                      ) = {
     var topName: String = null
     val gen = () =>
@@ -40,7 +37,6 @@ object SimpleGenerator {
         case a => Some(a)
       }
     os.write(os.Path(dir) / s"$topName.anno.json", firrtl.annotations.JsonProtocol.serialize(annos))
-    freechips.rocketchip.util.ElaborationArtefacts.files.foreach{ case (ext, contents) => os.write.over(os.Path(dir) / s"${config.mkString("_")}.${ext}", contents()) }
   }
 
   def main(args: Array[String]): Unit = ParserForMethods(this).runOrExit(args)
