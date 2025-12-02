@@ -5,7 +5,7 @@ import spinal.core.{SpinalConfig, SystemVerilog}
 object Play {
   def main(args: Array[String]) {
     println("test Gen Misc......")
-    SpinalConfig(mode = SystemVerilog, targetDirectory = "changbaiTest", genLineComments = true, oneFilePerComponent = true)
+    SpinalConfig(mode = SystemVerilog, targetDirectory = "rtl", genLineComments = true, oneFilePerComponent = true)
       .generate {
         val topLevel = new MyPlay
         topLevel
@@ -14,7 +14,7 @@ object Play {
   }
 }
 
-object Print {
+object myPrint {
   def main(args: Array[String]) {
     println("test Gen Changbai......")
   }
