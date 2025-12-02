@@ -1,4 +1,4 @@
-package lib
+package play.lib
 
 import spinal.core.{Area, BaseType, Bool, Component, Data, False, HardType, Nameable}
 

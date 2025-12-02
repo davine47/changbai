@@ -1,6 +1,6 @@
-package plugins
+package play.plugins
 
-import lib.{Pipeline, Stage}
+import play.lib.{Pipeline, Stage}
 import spinal.core.{Area, Nameable}
 
 trait Plugin[T <: Pipeline] extends Nameable{

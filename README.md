@@ -76,6 +76,13 @@ $ make
 $ gtkwave dump.vcd
 ```
 
+# Software stack
+## riscv-opcodes
+```shell
+$ cd changbai/sw/riscv-opcodes
+$ make EXTENSIONS='rv64_i rv64_m'
+```
+
 
 
 
