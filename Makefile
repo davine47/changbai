@@ -11,4 +11,4 @@ idea:
 	mill mill.idea.GenIdea/idea
 
 clean:
-	rm -rf out/ *.lst changbaiTest/
+	rm -rf out/ rtl/ *.lst changbaiTest/

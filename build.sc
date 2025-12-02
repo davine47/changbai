@@ -1,7 +1,7 @@
 import mill._
 import scalalib._
 
-val spinalVersion = "1.11.0"
+val spinalVersion = "1.13.0"
 
 val pwd = os.Path(sys.env("MILL_WORKSPACE_ROOT"))
 
