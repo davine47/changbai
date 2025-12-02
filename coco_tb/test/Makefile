@@ -1,10 +1,9 @@
 SIM ?= verilator
 TOPLEVEL_LANG ?= verilog
 
-VERILOG_SOURCES += $(shell find $(PWD)/../../examples -name "*.v" -or -name "*.sv")
-VERILOG_SOURCES += $(shell find $(PWD)/../../changbaiTest -name "*.v" -or -name "*.sv")
+VERILOG_SOURCES += $(shell find $(PWD)/../../rtl -name "*.v" -or -name "*.sv")
 # verilog top module name
-TOPLEVEL ?= Myplay
+TOPLEVEL ?= MyPlay
 
 # python test file name
 MODULE ?= test_play

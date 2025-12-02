@@ -1,6 +1,7 @@
 package examples
 
 import chisel3._
+import chisel3.util._
 
 class Adder() extends RawModule {
   val io = IO(new Bundle {

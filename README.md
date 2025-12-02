@@ -1,11 +1,30 @@
 # changbai
-first commit
-light-ly joined
 
-# start simulation
+# Environment (Dependencies) on macos Sequoia 15.6
 
-## on macos
-Setup a virtual python environment
+## pyenv, python3, cocotb
+
+Use pyenv to manage global python libs
+```shell
+$ brew install pyenv
+```
+
+Add path to .zshrc
+```shell
+eval "$(pyenv init --path)"
+eval "$(pyenv init -)"
+```
+```shell
+$ source .zshrc
+```
+```shell
+$ pyenv install 3.12.12 # less than this version
+$ pyenv rehash 
+$ pyenv versions
+$ which python3 # confirm your python3 path
+$ pip3 install cocotb
+```
+Or setup a virtual python environment in shell.
 ```shell
 $ cd changbai/cocotb_example
 $ python3 -m venv ./venv
@@ -13,28 +32,50 @@ $ source ./venv/bin/activate
 $ python3 -m pip install cocotb
 $ make
 ```
-Or use pyenv to manage global python libs
+## verilator
 ```shell
-$ brew install pyenv
+$ git clone https://github.com/verilator/verilator
+$ cd verilator
+$ export VERILATOR_ROOT=$PWD
+$ autoconf
+$ ./configure
+
+$ make -j8
 ```
-Add path to .bash_profile
+Add local verilator path into .zshrc
 ```shell
-$ eval “$(pyenv init -)”
+export PATH="/Users/username/verilator/bin:$PATH"
 ```
 ```shell
-$ source .bash_profile
+$ source .zshrc
 ```
+
+## gtkwave
+https://gtkwave.github.io/gtkwave/install/mac.html
 ```shell
-$ pyenv install 3.11.2
-$ pyenv rehash 
-$ pyenv versions 
-$ pyenv global 3.4.3
-$ pyenv versions
-$ python
-$ pip3 install cocotb #1.8.1
+$ git clone https://github.com/gtkwave/gtkwave.git gtkwave
+$ cd gtkwave
+$ brew install desktop-file-utils shared-mime-info gobject-introspection gtk-mac-integration meson ninja pkg-config gtk+3 gtk4
+# Use --prefix to specify the installation path
+$ meson setup build --prefix=/opt
+# Or install to default path (/usr/local):
+# meson setup build
+$ meson compile -C build # Start compile
+$ sudo meson install -C build # Install gtkwave
+$ gtkwave
 ```
-then setup pycharm according global python3 path
+
+# Run simulation with cocotb
+
+## Run an example
 ```shell
-$ which python3
+$ cd changbai
+$ make rtl
+$ cd changbai/coco_tb/test
+$ make
+$ gtkwave dump.vcd
 ```
-We recommand to use python versions which less than 3.12 because of distutils module dependence.
+
+
+
+

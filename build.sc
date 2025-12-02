@@ -1,15 +1,12 @@
 import mill._
 import scalalib._
-import $file.chisel.`rocket-chip`.common
-import $file.chisel.`rocket-chip`.cde.common
-import $file.chisel.`rocket-chip`.hardfloat.common
 
-val spinalVersion = "1.9.4"
+val spinalVersion = "1.11.0"
 
 val pwd = os.Path(sys.env("MILL_WORKSPACE_ROOT"))
 
 def relatedScalaVersion = "2.13.10"
-def chiselScalaVersion = "2.13.10"
+def chiselScalaVersion = "2.13.16"
 def spinalhdlScalaVersion = "2.11.12"
 
 val defaultSpinalhdlVersions = Map(
@@ -23,15 +20,8 @@ val defaultSpinalhdlVersions = Map(
 
 def defaultChiselVersions(chiselVersion: String) = chiselVersion match {
   case "chisel" => Map(
-    "chisel"        -> ivy"org.chipsalliance::chisel:6.0.0-RC1",
-    "chisel-plugin" -> ivy"org.chipsalliance:::chisel-plugin:6.0.0-RC1",
-    "chiseltest"    -> ivy"edu.berkeley.cs::chiseltest:5.0.2",
-    "mainargs"      -> ivy"com.lihaoyi::mainargs:0.5.0"
-  )
-  case "chisel3" => Map(
-    "chisel"        -> ivy"edu.berkeley.cs::chisel3:3.6.0",
-    "chisel-plugin" -> ivy"edu.berkeley.cs:::chisel3-plugin:3.6.0",
-    "chiseltest"    -> ivy"edu.berkeley.cs::chiseltest:0.6.2",
+    "chisel"        -> ivy"org.chipsalliance::chisel:7.0.0-RC1",
+    "chisel-plugin" -> ivy"org.chipsalliance:::chisel-plugin:7.0.0-RC1",
     "mainargs"      -> ivy"com.lihaoyi::mainargs:0.5.0"
   )
 }
@@ -78,57 +68,6 @@ trait HasChisel extends SbtModule with Cross.Module[String] {
   override def scalacPluginIvyDeps = super.scalacPluginIvyDeps() ++ chiselPluginDeps
 }
 
-object rocketchip extends Cross[RocketChip]("chisel", "chisel3")
-
-trait RocketChip
-  extends $file.`chisel`.`rocket-chip`.common.RocketChipModule
-    with HasChisel {
-  override def scalaVersion: T[String] = T(defaultScalaVersion)
-
-  override def millSourcePath = pwd / "chisel" /"rocket-chip"
-
-  def macrosModule = macros
-
-  def hardfloatModule = hardfloat(crossValue)
-
-  def cdeModule = cde
-
-  def mainargsIvy = ivy"com.lihaoyi::mainargs:0.5.4"
-
-  def json4sJacksonIvy = ivy"org.json4s::json4s-jackson:4.0.6"
-
-  object macros extends Macros
-
-  trait Macros
-    extends $file.`chisel`.`rocket-chip`.common.MacrosModule
-      with SbtModule {
-
-    def scalaVersion: T[String] = T(defaultScalaVersion)
-
-    def scalaReflectIvy = ivy"org.scala-lang:scala-reflect:${defaultScalaVersion}"
-  }
-
-  object hardfloat extends Cross[Hardfloat](crossValue)
-
-  trait Hardfloat
-    extends $file.`chisel`.`rocket-chip`.hardfloat.common.HardfloatModule with HasChisel {
-
-    override def scalaVersion: T[String] = T(defaultScalaVersion)
-
-    override def millSourcePath = pwd / "chisel" /"rocket-chip" / "hardfloat" / "hardfloat"
-
-  }
-
-  object cde extends CDE
-
-  trait CDE extends $file.`chisel`.`rocket-chip`.cde.common.CDEModule with ScalaModule {
-
-    def scalaVersion: T[String] = T(defaultScalaVersion)
-
-    override def millSourcePath = pwd / "chisel" / "rocket-chip" / "cde" / "cde"
-  }
-}
-
 object vexriscv extends HasSpinalhdl with SbtModule{
   override def millSourcePath = os.pwd / "spinal" / "VexRiscv"
   override def moduleDeps: Seq[JavaModule] = super.moduleDeps
@@ -136,7 +75,7 @@ object vexriscv extends HasSpinalhdl with SbtModule{
 
 class Changbai(chiselGenerator: String = "SimpleGenerator") extends Module{
 
-  object chisel extends Cross[ChiselModules]("chisel", "chisel3")
+  object chisel extends Cross[ChiselModules]("chisel")
   trait ChiselModules extends HasChisel with SbtModule {
 
     def chiselPluginJar: T[Option[PathRef]]
@@ -145,8 +84,7 @@ class Changbai(chiselGenerator: String = "SimpleGenerator") extends Module{
     override def millSourcePath = pwd / "chisel"
     override def mainClass = T(Some(s"generators.${chiselGenerator}"))
 
-    def rocketModule = rocketchip(crossValue)
-    override def moduleDeps: Seq[JavaModule] = super.moduleDeps ++ Seq(rocketModule)
+    override def moduleDeps: Seq[JavaModule] = super.moduleDeps
   }
 
   object spinal extends HasSpinalhdl with SbtModule{
@@ -161,11 +99,10 @@ class Changbai(chiselGenerator: String = "SimpleGenerator") extends Module{
 
 object changbaiV1 extends Changbai
 
-trait Emulator extends Cross.Module3[String, String, String] {
-  
+trait Emulator extends Cross.Module2[String, String] {
+
   val top: String = crossValue
-  val config: String = crossValue2
-  val chiselGenerator: String = crossValue3
+  val chiselGenerator: String = crossValue2
 
   val cb = new Changbai(chiselGenerator)
   object generator extends Module {
@@ -176,12 +113,11 @@ trait Emulator extends Cross.Module3[String, String, String] {
         "-jar",
         cb.chisel("chisel").assembly().path,
         "--dir", T.dest.toString,
-        "--top", top,
-        "--config", config,
+        "--top", top
       ).call()
       PathRef(T.dest)
     }
-  
+
     def chiselAnno = T {
       os.walk(elaborate().path).collectFirst { case p if p.last.endsWith("anno.json") => p }.map(PathRef(_)).get
     }
@@ -205,7 +141,7 @@ trait Emulator extends Cross.Module3[String, String, String] {
         "--split-verilog",
         "--preserve-values=named",
         "--output-annotation-file=mfc.anno.json",
-        s"-o=${T.dest}"
+        s"-o=/Users/wenjunnan/projects/yuanqi/targets/changbai/dest"
       ).call(T.dest)
       PathRef(T.dest)
     }
@@ -226,6 +162,5 @@ trait Emulator extends Cross.Module3[String, String, String] {
 
 object emulator extends Cross[Emulator](
 
-  ("sandbox.Hello", "sandbox.HelloConfig", "DiplomacyGenerator"),
-  ("examples.Adder", "sandbox.HelloConfig", "SimpleGenerator")
+  ("examples.Adder", "SimpleGenerator")
 )
