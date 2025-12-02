@@ -2,6 +2,11 @@
 
 # Environment (Dependencies) on macos Sequoia 15.6
 
+```shell
+$ export CHANGBAI_ROOT=$PWD
+$ echo $CHANGBAI_ROOT
+```
+
 ## pyenv, python3, cocotb
 
 Use pyenv to manage global python libs
@@ -82,7 +87,11 @@ $ gtkwave dump.vcd
 $ cd changbai/sw/riscv-opcodes
 $ make EXTENSIONS='rv64_i rv64_m'
 ```
-
+Or use scripts to update scala files
+```shell
+# spinalhdl v1
+$ ./scripts/update_spinalhdl_v1_instructions.sh
+```
 
 
 
