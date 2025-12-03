@@ -1,7 +1,7 @@
 SIM ?= verilator
 TOPLEVEL_LANG ?= verilog
 
-VERILOG_SOURCES += $(shell find $(PWD)/../../rtl -name "*.v" -or -name "*.sv")
+VERILOG_SOURCES += $(shell find $(CHANGBAI_ROOT)/rtl -name "*.v" -or -name "*.sv")
 # verilog top module name
 TOPLEVEL ?= MyPlay
 
