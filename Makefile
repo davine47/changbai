@@ -4,11 +4,8 @@ test:
 hello:
 	mill -i changbaiV1.spinal.runMain genChangbai
 
-rtl:
-	mill -i changbaiV1.spinal.test.runMain changbaiV1.v1.test.Play
-
 play:
-	mill -i changbaiV1.spinal.test.runMain play.sayHello
+	mill -i changbaiV1.spinal.test.runMain changbaiV1.v1.test.Play
 
 idea:
 	mill mill.idea.GenIdea/idea

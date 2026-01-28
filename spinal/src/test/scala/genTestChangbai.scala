@@ -7,13 +7,13 @@ object Play {
     println("test Gen Misc......")
     SpinalConfig(
       mode = SystemVerilog,
-      targetDirectory = "rtl",
+      targetDirectory = "play",
       genLineComments = true,
       oneFilePerComponent = true,
       withTimescale = false,
       printFilelist = false)
       .generate {
-        val topLevel = new MyPlay
+        val topLevel = new VectorDecodeComponent
         topLevel
       }
 
