@@ -629,7 +629,7 @@ object Causes {
     res.toArray
   }
 }
-object CSRs {
+object CsrRegAddr {
   val fflags = 0x1
   val frm = 0x2
   val fcsr = 0x3

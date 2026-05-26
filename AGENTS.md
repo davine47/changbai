@@ -26,5 +26,5 @@ You shall first refer to and understand these projects and documents, then deduc
 # Project Requirements
 You **MUST** comply with the project requirements.
 
-
+* All Scala projects are compiled using the Mill build tool. **SBT is prohibited from being used**.
 
