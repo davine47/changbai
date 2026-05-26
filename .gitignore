@@ -10,6 +10,9 @@ docs-target/
 *.v
 *.anno.json
 *.swp
+*.bin
+*.elf
+*.hex
 *~
 /examples
 *.vcd
