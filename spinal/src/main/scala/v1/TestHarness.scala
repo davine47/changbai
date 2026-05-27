@@ -1,4 +1,4 @@
-// This file is AI[Claude, high]-generated and manually verified.
+// This file is AI[DeepSeek V4 Pro, high]-generated and manually verified.
 package v1
 
 import spinal.core._
@@ -6,21 +6,25 @@ import spinal.lib._
 import v1.testram.{TestRam, TestRamConfig}
 
 // =============================================================================
-// TestHarness — Frontend + ScalarDecode + TestRam integration top
+// TestHarness — TopV1 + TestRam integration
+//
+// Topology:
+//   TopV1 (Frontend + Rw64Fetch + ScalarDecode) → io.rw → TestRam
 // =============================================================================
 
 class TestHarness(bootromPath: Option[String] = None) extends Component {
   val io = new Bundle {
     val clk   = in Bool()
     val reset = in Bool()
+    val flush = in Bool()
 
-    // === instruction output (Frontend) ===
-    val instValid = out Bool()
-    val instBits  = out Bits(32 bits)
-    val isRVC     = out Bool()
-    val nextPc    = out UInt(64 bits)
+    // === instruction output (from TopV1) ===
+    val instValid  = out Bool()
+    val instBits   = out Bits(32 bits)
+    val instIsRVC  = out Bool()
+    val instIll    = out Bool()
 
-    // === decode output (ScalarDecode) ===
+    // === decode output (from TopV1.instDecode, gated by instValid) ===
     val decLegal      = out Bool()
     val decBranch     = out Bool()
     val decJal        = out Bool()
@@ -40,57 +44,67 @@ class TestHarness(bootromPath: Option[String] = None) extends Component {
     val decFence      = out Bool()
     val decFenceI     = out Bool()
     val decAmo        = out Bool()
-
-    val flush = in Bool()
   }
-
-  val ramAddrWidth = 14
 
   val coreClockDomain = ClockDomain(clock = io.clk, reset = io.reset)
   val area = new ClockingArea(coreClockDomain) {
 
-    val frontend = new Frontend
-    frontend.io.clk   := io.clk
-    frontend.io.reset := io.reset
-    frontend.io.flush := io.flush
+    // =====================================================================
+    // TopV1 — CPU core (Frontend + Rw64Fetch + ScalarDecode)
+    // =====================================================================
+    val top = new TopV1
+    top.io.clk   := io.clk
+    top.io.reset := io.reset
+    top.io.flush := io.flush
 
-    io.instValid := frontend.io.instValid
-    io.instBits  := frontend.io.instBits
-    io.isRVC     := frontend.io.isRVC
-    io.nextPc    := frontend.io.nextPc
+    io.instValid := top.io.instValid
+    io.instBits  := top.io.instBits
+    io.instIsRVC := top.io.instIsRVC
+    io.instIll   := top.io.instIll
 
     // =====================================================================
-    // ScalarDecode — decode integration
+    // TestRam — RW64 slave memory (instruction store)
     // =====================================================================
-    val scalarDecode = new ScalarDecode
-    scalarDecode.io.inst := frontend.io.instBits
+    val testRamConfig = TestRamConfig(width = 8, depth = 2048, initFile = bootromPath)
+    val testRam = new TestRam(testRamConfig)
 
-    // Output decode result only when instruction is valid, otherwise output all zeros.
-    // decLegal = scalarDecode legal AND NOT (RVC illegal)
-    // RVCExpander may expand illegal C instructions into valid 32b (e.g. 0x0000 → 0x00010413)
-    // ScalarDecode would see a valid instruction, so we must override via rvcIll
-    val effectiveLegal = scalarDecode.io.decode.legal && !frontend.io.rvcIll
+    testRam.io.rw.waddr  := top.io.rw.waddr(testRamConfig.addrWidth - 1 downto 0)
+    testRam.io.rw.wdata  := top.io.rw.wdata
+    testRam.io.rw.wvalid := top.io.rw.wvalid
+    top.io.rw.wready := testRam.io.rw.wready
 
-    when(frontend.io.instValid) {
+    testRam.io.rw.raddr  := top.io.rw.raddr(testRamConfig.addrWidth - 1 downto 0)
+    testRam.io.rw.rvalid := top.io.rw.rvalid
+    top.io.rw.rready := testRam.io.rw.rready
+
+    top.io.rw.rdata := testRam.io.rw.rdata
+    top.io.rw.rresp := testRam.io.rw.rresp
+
+    // =====================================================================
+    // Decode output — pass-through from TopV1, gated by instValid
+    // =====================================================================
+    val effectiveLegal = top.io.instDecode.legal && !top.io.instIll
+
+    when(top.io.instValid) {
       io.decLegal      := effectiveLegal
-      io.decBranch     := scalarDecode.io.decode.branch
-      io.decJal        := scalarDecode.io.decode.jal
-      io.decJalr       := scalarDecode.io.decode.jalr
-      io.decRrf1       := scalarDecode.io.decode.rrf1
-      io.decRrf2       := scalarDecode.io.decode.rrf2
-      io.decWrf1       := scalarDecode.io.decode.wrf1
-      io.decUseALU     := scalarDecode.io.decode.useALU
-      io.decAluOp      := scalarDecode.io.decode.aluOp
-      io.decUseMem     := scalarDecode.io.decode.useMem
-      io.decMemOp      := scalarDecode.io.decode.memOp
-      io.decMemResOp   := scalarDecode.io.decode.memResOp
-      io.decUseCsr     := scalarDecode.io.decode.useCsr
-      io.decCsrOp      := scalarDecode.io.decode.csrOp
-      io.decNeedImmExt := scalarDecode.io.decode.needImmExt
-      io.decImmExtType := scalarDecode.io.decode.immExtType
-      io.decFence      := scalarDecode.io.decode.fence
-      io.decFenceI     := scalarDecode.io.decode.fenceI
-      io.decAmo        := scalarDecode.io.decode.amo
+      io.decBranch     := top.io.instDecode.branch
+      io.decJal        := top.io.instDecode.jal
+      io.decJalr       := top.io.instDecode.jalr
+      io.decRrf1       := top.io.instDecode.rrf1
+      io.decRrf2       := top.io.instDecode.rrf2
+      io.decWrf1       := top.io.instDecode.wrf1
+      io.decUseALU     := top.io.instDecode.useALU
+      io.decAluOp      := top.io.instDecode.aluOp
+      io.decUseMem     := top.io.instDecode.useMem
+      io.decMemOp      := top.io.instDecode.memOp
+      io.decMemResOp   := top.io.instDecode.memResOp
+      io.decUseCsr     := top.io.instDecode.useCsr
+      io.decCsrOp      := top.io.instDecode.csrOp
+      io.decNeedImmExt := top.io.instDecode.needImmExt
+      io.decImmExtType := top.io.instDecode.immExtType
+      io.decFence      := top.io.instDecode.fence
+      io.decFenceI     := top.io.instDecode.fenceI
+      io.decAmo        := top.io.instDecode.amo
     }.otherwise {
       io.decLegal      := False
       io.decBranch     := False
@@ -112,23 +126,6 @@ class TestHarness(bootromPath: Option[String] = None) extends Component {
       io.decFenceI     := False
       io.decAmo        := False
     }
-
-    // =====================================================================
-    // TestRam
-    // =====================================================================
-    val testRam = new TestRam(TestRamConfig(width = 8, depth = 2048, initFile = bootromPath))
-
-    testRam.io.rw.waddr  := frontend.io.rw.waddr(ramAddrWidth - 1 downto 0)
-    testRam.io.rw.wdata  := frontend.io.rw.wdata
-    testRam.io.rw.wvalid := frontend.io.rw.wvalid
-    frontend.io.rw.wready := testRam.io.rw.wready
-
-    testRam.io.rw.raddr  := frontend.io.rw.raddr(ramAddrWidth - 1 downto 0)
-    testRam.io.rw.rvalid := frontend.io.rw.rvalid
-    frontend.io.rw.rready := testRam.io.rw.rready
-
-    frontend.io.rw.rdata := testRam.io.rw.rdata
-    frontend.io.rw.rresp := testRam.io.rw.rresp
   }
 }
 
@@ -151,45 +148,6 @@ object GenTestHarness {
       new TestHarness(bootrom)
     }
 
-    bootrom.foreach { path =>
-      patchReadmemh("rtl/TestRam.sv", 8, 2048, path)
-    }
-
     println(s"Generated rtl/TestHarness.sv" + bootrom.map(" (bootrom=" + _ + ")").getOrElse(""))
-  }
-
-  def patchReadmemh(svPath: String, width: Int, depth: Int, binPath: String): Unit = {
-    import java.io.{File, PrintWriter}
-    import java.nio.file.{Files, Paths}
-    import scala.collection.mutable.ArrayBuffer
-
-    val svFile = new File(svPath)
-    if (!svFile.exists()) return
-    val svContent = new String(Files.readAllBytes(svFile.toPath))
-    val pattern = """\$readmemb\("([^"]+)",\s*(\w+)\)""".r
-    pattern.findFirstMatchIn(svContent).foreach { m =>
-      val hexName = m.group(1).stripSuffix(".bin") + ".hex"
-      val hexPath = "rtl/" + hexName
-      val bytes = Files.readAllBytes(Paths.get(binPath))
-      val hexLines = new ArrayBuffer[String]()
-      var i = 0
-      while (i + width <= bytes.length) {
-        var word: BigInt = 0
-        var b = width - 1
-        while (b >= 0) { word = (word << 8) | (bytes(i + b).toInt & 0xFF); b -= 1 }
-        val hs = word.toString(16)
-        hexLines += ("0" * (width * 2 - hs.length)) + hs
-        i += width
-      }
-      while (hexLines.length < depth) hexLines += "0" * (width * 2)
-      val pw = new PrintWriter(new File(hexPath))
-      hexLines.foreach(pw.println)
-      pw.close()
-      val patched = svContent.replace(m.matched, "$readmemh(\"" + hexName + "\", " + m.group(2) + ")")
-      Files.write(svFile.toPath, patched.getBytes)
-      val oldBin = new File("rtl/" + m.group(1))
-      if (oldBin.exists()) oldBin.delete()
-      println("[GenTestHarness] Patched $readmemb -> $readmemh, hex: " + hexPath)
-    }
   }
 }

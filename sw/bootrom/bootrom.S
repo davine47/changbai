@@ -7,6 +7,7 @@ _start:
   li s0, DRAM_BASE
   csrr a0, mhartid
   add a2, a2, a3
+  addi a5, a5, 9
   la a1, _dtb
   jr s0
 

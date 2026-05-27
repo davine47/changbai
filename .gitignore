@@ -13,6 +13,7 @@ docs-target/
 *.bin
 *.elf
 *.hex
+*.img
 *~
 /examples
 *.vcd
