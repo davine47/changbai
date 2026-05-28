@@ -6,10 +6,11 @@ import spinal.lib._
 import v1.testram.{TestRam, TestRamConfig}
 
 // =============================================================================
-// TestHarness — TopV1 + TestRam integration
+// TestHarness — TopV1 + TestRam + FrontendMonitor integration
 //
 // Topology:
 //   TopV1 (Frontend + Rw64Fetch + ScalarDecode) → io.rw → TestRam
+//   TopV1.inst* → FrontendMonitor
 // =============================================================================
 
 class TestHarness(bootromPath: Option[String] = None) extends Component {
@@ -23,6 +24,7 @@ class TestHarness(bootromPath: Option[String] = None) extends Component {
     val instBits   = out Bits(32 bits)
     val instIsRVC  = out Bool()
     val instIll    = out Bool()
+    val instEffective = out Bool()  // instValid && instruction is illegal
 
     // === decode output (from TopV1.instDecode, gated by instValid) ===
     val decLegal      = out Bool()
@@ -44,6 +46,12 @@ class TestHarness(bootromPath: Option[String] = None) extends Component {
     val decFence      = out Bool()
     val decFenceI     = out Bool()
     val decAmo        = out Bool()
+
+    // === FrontendMonitor output ===
+    val monTimeCounter     = out UInt(64 bits)
+    val monValidInstCounts = out UInt(64 bits)
+    val monAccGapCycles    = out UInt(64 bits)
+    val monBucketGapCycles = out Vec(UInt(32 bits), 15)
   }
 
   val coreClockDomain = ClockDomain(clock = io.clk, reset = io.reset)
@@ -84,6 +92,7 @@ class TestHarness(bootromPath: Option[String] = None) extends Component {
     // Decode output — pass-through from TopV1, gated by instValid
     // =====================================================================
     val effectiveLegal = top.io.instDecode.legal && !top.io.instIll
+    io.instEffective := top.io.instValid && !effectiveLegal
 
     when(top.io.instValid) {
       io.decLegal      := effectiveLegal
@@ -126,6 +135,20 @@ class TestHarness(bootromPath: Option[String] = None) extends Component {
       io.decFenceI     := False
       io.decAmo        := False
     }
+
+    // =====================================================================
+    // FrontendMonitor — fetch density recorder
+    // =====================================================================
+    val monitor = new FrontendMonitor
+    monitor.io.clk       := io.clk
+    monitor.io.reset     := io.reset
+    monitor.io.instValid := top.io.instValid
+    monitor.io.instBits  := top.io.instBits
+
+    io.monTimeCounter     := monitor.io.timeCounter
+    io.monValidInstCounts := monitor.io.validInstCounts
+    io.monAccGapCycles    := monitor.io.accGapCycles
+    io.monBucketGapCycles := monitor.io.bucketGapCycles
   }
 }
 

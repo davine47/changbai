@@ -116,40 +116,30 @@ class InstQueue(depth: Int = 16) extends Component {
   // Payload: 33 bits = 32-bit inst bits + 1-bit isRVC
   val fifoPayload = HardType(Bits(33 bits))
   val fifo = StreamFifo(fifoPayload, depth)
-  fifo.io.flush := io.flush  // clear FIFO on flush
+  fifo.io.flush := io.flush
 
-  // Push FSM: iterate buf[0..3] and push valid entries one by one
+  // Push FSM: iterate buf[0..3] and push valid entries one by one.
+  // Pushes directly when bufValid set and FIFO ready — 1 cycle per entry.
   val pushIdx = Reg(UInt(2 bits)) init 0
-  val pushing = Reg(Bool()) init False
 
-  // FIFO input
   val fifoIn = Stream(fifoPayload)
-  fifoIn.valid := pushing  // valid=1 while pushing
-  fifoIn.payload := bufBits(pushIdx) ## bufRvc(pushIdx).asBits
   fifo.io.push << fifoIn
 
-  // Push state machine
   val allEmpty = !(bufValid(0) || bufValid(1) || bufValid(2) || bufValid(3))
+  val fifoReady = fifo.io.push.ready
+
+  // Drive FIFO input directly from bufValid and FIFO ready
+  fifoIn.valid := bufValid(pushIdx) && fifoReady
+  fifoIn.payload := bufBits(pushIdx) ## bufRvc(pushIdx).asBits
+
   when(io.flush) {
     pushIdx := 0
-    pushing := False
   }.elsewhen(allEmpty) {
     pushIdx := 0
-    pushing := False
-  }.elsewhen(!pushing) {
-    // Check for pending entries
-    when(bufValid(pushIdx)) {
-      pushing := True
-    }.otherwise {
-      pushIdx := pushIdx + 1
-    }
-  }.otherwise {
-    // Pushing, wait for FIFO acceptance
-    when(fifoIn.fire) {
-      bufValid(pushIdx) := False
-      pushing := False
-      pushIdx := pushIdx + 1
-    }
+  }.elsewhen(bufValid(pushIdx) && fifoReady) {
+    // Push accepted: clear this entry, advance to next
+    bufValid(pushIdx) := False
+    pushIdx := pushIdx + 1
   }
 
   // =========================================================================
