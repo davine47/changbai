@@ -24,7 +24,7 @@ class TestHarness(bootromPath: Option[String] = None) extends Component {
     val instBits   = out Bits(32 bits)
     val instIsRVC  = out Bool()
     val instIll    = out Bool()
-    val instEffective = out Bool()  // instValid && instruction is illegal
+    val instEffective = out Bool()  // instValid && decode legal
 
     // === decode output (from TopV1.instDecode, gated by instValid) ===
     val decLegal      = out Bool()
@@ -91,11 +91,10 @@ class TestHarness(bootromPath: Option[String] = None) extends Component {
     // =====================================================================
     // Decode output — pass-through from TopV1, gated by instValid
     // =====================================================================
-    val effectiveLegal = top.io.instDecode.legal && !top.io.instIll
-    io.instEffective := top.io.instValid && !effectiveLegal
+    io.instEffective := top.io.instValid && top.io.instDecode.legal
 
     when(top.io.instValid) {
-      io.decLegal      := effectiveLegal
+      io.decLegal      := top.io.instDecode.legal
       io.decBranch     := top.io.instDecode.branch
       io.decJal        := top.io.instDecode.jal
       io.decJalr       := top.io.instDecode.jalr

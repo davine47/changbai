@@ -286,12 +286,18 @@ object ScalarDecodeSigs {
 
 class ScalarDecode extends Component {
   val io = new Bundle {
-    val inst   = in  Bits(32 bits)
-    val decode = out(new ScalarDecodeBundle)
+    val inst    = in  Bits(32 bits)
+    val instIll = in  Bool()  // RVC illegal: force legal=0 when set
+    val decode  = out(new ScalarDecodeBundle)
   }
 
   val decodeArea = ScalarDecodeSigs(new ScalarDecodeTableConst)
   io.decode.assignFromBits(decodeArea.decode(io.inst))
+
+  // Override legal: RVC illegal instructions are not legal
+  when(io.instIll) {
+    io.decode.legal := False
+  }
 }
 
 // =============================================================================
@@ -309,7 +315,8 @@ class ScalarDecodeTop extends Component {
   val coreClockDomain = ClockDomain(clock = io.clk, reset = io.reset)
   val area = new ClockingArea(coreClockDomain) {
     val decoder = new ScalarDecode
-    decoder.io.inst := io.inst
+    decoder.io.inst    := io.inst
+    decoder.io.instIll := False  // standalone: no RVC context
     io.decode := decoder.io.decode
   }
 }

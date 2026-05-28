@@ -62,7 +62,8 @@ class TopV1(bootromPath: Option[String] = None) extends Component {
 
     val decode = new ScalarDecode
 
-    decode.io.inst := frontend.io.instBits
+    decode.io.inst    := frontend.io.instBits
+    decode.io.instIll := frontend.io.instIll
     io.instDecode <> decode.io.decode
 
   }
