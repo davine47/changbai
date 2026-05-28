@@ -1,8 +1,8 @@
 // Generator : SpinalHDL v1.13.0    git head : d9d72474863badf47d8585d187f3e04ae4749c59
 // Component : MyPlay
-// Git hash  : 784c772a23e63661c98a94bb9717bc3efe2863ff
+// Git hash  : e5c4e732b93ec3aeb9c948b7b46a65246e78c5e6
 
-`timescale 1ns/1ps 
+
 module MyPlay (
   input  wire [7:0]    a_0,
   input  wire [7:0]    a_1,

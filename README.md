@@ -1,8 +1,13 @@
 # changbai
 
-# Environment (Dependencies) on macos Sequoia 15.6
+# 1. Environment (Dependencies) on macos Sequoia 15.6
 
-## pyenv, python3, cocotb
+```shell
+$ export CHANGBAI_ROOT=$PWD
+$ echo $CHANGBAI_ROOT
+```
+
+## 1.1 pyenv, python3, cocotb
 
 Use pyenv to manage global python libs
 ```shell
@@ -32,7 +37,7 @@ $ source ./venv/bin/activate
 $ python3 -m pip install cocotb
 $ make
 ```
-## verilator
+## 1.2 verilator
 ```shell
 $ git clone https://github.com/verilator/verilator
 $ cd verilator
@@ -50,7 +55,7 @@ export PATH="/Users/username/verilator/bin:$PATH"
 $ source .zshrc
 ```
 
-## gtkwave
+## 1.3 gtkwave
 https://gtkwave.github.io/gtkwave/install/mac.html
 ```shell
 $ git clone https://github.com/gtkwave/gtkwave.git gtkwave
@@ -65,7 +70,7 @@ $ sudo meson install -C build # Install gtkwave
 $ gtkwave
 ```
 
-# Run simulation with cocotb
+# 2. Run simulation with cocotb
 
 ## Run an example
 ```shell
@@ -76,6 +81,17 @@ $ make
 $ gtkwave dump.vcd
 ```
 
+# 3. Software stack
+## riscv-opcodes
+```shell
+$ cd changbai/sw/riscv-opcodes
+$ make EXTENSIONS='rv64_i rv64_m'
+```
+Or use scripts to update scala files
+```shell
+# spinalhdl v1
+$ ./scripts/update_spinalhdl_v1_instructions.sh
+```
 
 
 

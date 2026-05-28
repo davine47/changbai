@@ -1,0 +1,6 @@
+<testsuites name="results">
+  <testsuite name="all" package="all">
+    <property name="random_seed" value="1764728467" />
+    <testcase name="play_basic_test" classname="test_play" file="/Users/wenjunnan/changbai/env/coco_tb/test/test_play.py" lineno="6" time="0.0005037784576416016" sim_time_ns="10.0" ratio_time="19849.995267392333" />
+  </testsuite>
+</testsuites>

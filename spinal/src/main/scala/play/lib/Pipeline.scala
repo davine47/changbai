@@ -1,6 +1,6 @@
-package lib
+package play.lib
 
-import plugins.Plugin
+import play.plugins.Plugin
 import spinal.core._
 import spinal.lib._
 

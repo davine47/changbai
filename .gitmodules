@@ -1,0 +1,30 @@
+[submodule "sw/riscv-opcodes"]
+	path = sw/riscv-opcodes
+	url = https://github.com/riscv/riscv-opcodes.git
+[submodule "knowledge/riscv-isa-manual"]
+	path = knowledge/riscv-isa-manual
+	url = git@github.com:riscv/riscv-isa-manual.git
+[submodule "knowledge/SpinalDoc-RTD"]
+	path = knowledge/SpinalDoc-RTD
+	url = git@github.com:SpinalHDL/SpinalDoc-RTD.git
+[submodule "knowledge/SpinalHDL"]
+	path = knowledge/SpinalHDL
+	url = git@github.com:SpinalHDL/SpinalHDL.git
+[submodule "knowledge/VexRiscv"]
+	path = knowledge/VexRiscv
+	url = git@github.com:SpinalHDL/VexRiscv.git
+[submodule "knowledge/chisel"]
+	path = knowledge/chisel
+	url = git@github.com:chipsalliance/chisel.git
+[submodule "assistant/pi-mono"]
+	path = assistant/pi-mono
+	url = git@github.com:davine47/pi-mono.git
+[submodule "knowledge/verilator"]
+	path = knowledge/verilator
+	url = git@github.com:verilator/verilator.git
+[submodule "knowledge/VexiiRiscv"]
+	path = knowledge/VexiiRiscv
+	url = git@github.com:SpinalHDL/VexiiRiscv.git
+[submodule "knowledge/rocket-chip"]
+	path = knowledge/rocket-chip
+	url = git@github.com:chipsalliance/rocket-chip.git
