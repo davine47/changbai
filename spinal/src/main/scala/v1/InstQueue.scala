@@ -38,6 +38,7 @@ class InstQueue(depth: Int = 16) extends Component {
     val instValid = out Bool()
     val instBits  = out Bits(32 bits)  // 32-bit: full; 16-bit: lower 16 bits
     val isRVC     = out Bool()         // true = compressed (16-bit)
+    val bufEmpty  = out Bool()         // staging buffer ready for new data
   }
 
   // =========================================================================
@@ -152,6 +153,7 @@ class InstQueue(depth: Int = 16) extends Component {
   val popPayload = fifo.io.pop.payload
   io.instBits := popPayload(32 downto 1)
   io.isRVC    := popPayload(0)
+  io.bufEmpty := allEmpty
 }
 
 // =============================================================================

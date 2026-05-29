@@ -49,7 +49,7 @@ class Frontend extends Component {
     val fetchReq      = Reg(Bool()) init False
     val booted        = Reg(Bool()) init False
 
-    val needFetch = (fetchAddr =/= lastFetchAddr) || hasCarryReg
+    val needFetch = hasCarryReg || (fetchAddr > lastFetchAddr)
 
     when(io.sync.flush) {
       nextPcReg     := 0
@@ -63,7 +63,7 @@ class Frontend extends Component {
     }.elsewhen(!fetchReq) {
       when(needFetch) {
         fetchReq      := True
-        lastFetchAddr := fetchAddr
+        lastFetchAddr := hasCarryReg ? (lastFetchAddr + 8) | fetchAddr
       }
     }.elsewhen(io.toFetch.reqReady) {
       fetchReq := False
@@ -82,14 +82,6 @@ class Frontend extends Component {
     decoder.io.carryIn    := carryReg
     decoder.io.hasCarryIn := hasCarryReg
 
-    when(io.sync.flush) {
-      carryReg    := 0
-      hasCarryReg := False
-    }.elsewhen(validReg) {
-      carryReg    := decoder.io.carryOut
-      hasCarryReg := decoder.io.hasCarryOut
-    }
-
     // =====================================================================
     // InstQueue — instruction buffer (4→1 per cycle)
     // =====================================================================
@@ -106,6 +98,16 @@ class Frontend extends Component {
     queue.io.inst2Is32   := decoder.io.inst2Is32
     queue.io.inst3Valid  := decoder.io.inst3Valid
     queue.io.inst3Is32   := decoder.io.inst3Is32
+
+    // Carry update (must be after queue definition)
+    when(io.sync.flush) {
+      carryReg    := 0
+      hasCarryReg := False
+    }.elsewhen(validReg && queue.io.bufEmpty) {
+      // Only accept carry if staging buffer is empty (avoid overwrite)
+      carryReg    := decoder.io.carryOut
+      hasCarryReg := decoder.io.hasCarryOut
+    }
 
     // =====================================================================
     // RVCExpander — 16-bit → 32-bit (pure combinational)
