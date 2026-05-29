@@ -3,7 +3,7 @@
 .section .text.start, "ax", @progbits
 .globl _start
 _start:
-  csrwi 0x7c1, 0 // disable chicken bits
+  //csrwi 0x7c1, 0 // disable chicken bits
   li s0, DRAM_BASE
   csrr a0, mhartid
   add a2, a2, a3

@@ -28,3 +28,9 @@
 [submodule "knowledge/rocket-chip"]
 	path = knowledge/rocket-chip
 	url = git@github.com:chipsalliance/rocket-chip.git
+[submodule "sw/cbp2025"]
+	path = sw/cbp2025
+	url = git@github.com:davine47/cbp2025.git
+[submodule "sw/nexus-am"]
+	path = sw/nexus-am
+	url = git@github.com:davine47/nexus-am.git

@@ -8,18 +8,27 @@ RISCV_PREFIX ?= $(HOME)/riscv/bin/riscv64-unknown-elf-
 
 GCC = $(RISCV_PREFIX)gcc
 OBJCOPY = $(RISCV_PREFIX)objcopy
+OBJDUMP = $(RISCV_PREFIX)objdump
 
 BOOTROM = bootrom
 HEX_DEPTH = 2048
 HEX_WIDTH = 8  # 8 bytes = 64-bit per TestRam word
 
-all: $(BOOTROM).img
+# Keep intermediate .elf and .bin files
+.SECONDARY:
+
+all: $(BOOTROM).img $(BOOTROM).dump
+	@echo "=== BootROM disassembly ==="
+	@cat $(BOOTROM).dump
 
 %.img: %.bin
 	dd if=$< of=$@ bs=128 count=1
 
 %.bin: %.elf
 	$(OBJCOPY) -O binary $< $@
+
+%.dump: %.elf
+	$(OBJDUMP) -d $< > $@
 
 %.elf: %.S linker.ld
 	$(GCC) -Tlinker.ld $< -nostdlib -static -Wl,--no-gc-sections -o $@
@@ -32,4 +41,4 @@ hex: $(BOOTROM).bin bin2hex.py
 # AI GENERATED END
 
 clean:
-	rm -f $(BOOTROM).img $(BOOTROM).bin $(BOOTROM).elf $(BOOTROM).hex
+	rm -f $(BOOTROM).img $(BOOTROM).bin $(BOOTROM).elf $(BOOTROM).hex $(BOOTROM).dump
