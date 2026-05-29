@@ -47,15 +47,17 @@ class Frontend extends Component {
     val fetchAddr = nextPcReg(63 downto 3) @@ U"000"  // 8-byte aligned
     val lastFetchAddr = Reg(UInt(64 bits)) init 0
     val fetchReq      = Reg(Bool()) init False
+    val fetchPending  = Reg(Bool()) init False  // outstanding fetch, wait for response
     val booted        = Reg(Bool()) init False
 
-    val needFetch = hasCarryReg || (fetchAddr > lastFetchAddr)
+    val needFetch = (hasCarryReg || (fetchAddr > lastFetchAddr)) && !fetchPending
 
     when(io.sync.flush) {
       nextPcReg     := 0
       lastFetchAddr := 0
       fetchReq      := False
       booted        := False
+      fetchPending  := False
     }.elsewhen(!booted) {
       booted        := True
       fetchReq      := True
@@ -66,7 +68,8 @@ class Frontend extends Component {
         lastFetchAddr := hasCarryReg ? (lastFetchAddr + 8) | fetchAddr
       }
     }.elsewhen(io.toFetch.reqReady) {
-      fetchReq := False
+      fetchReq     := False
+      fetchPending := True   // wait for response
     }
 
     io.toFetch.reqAddr  := lastFetchAddr
@@ -82,10 +85,15 @@ class Frontend extends Component {
     decoder.io.carryIn    := carryReg
     decoder.io.hasCarryIn := hasCarryReg
 
+    // Clear fetchPending when response arrives
+    when(validReg) {
+      fetchPending := False
+    }
+
     // =====================================================================
     // InstQueue — instruction buffer (4→1 per cycle)
     // =====================================================================
-    val queue = new InstQueue(depth = 16)
+    val queue = new InstQueue(depth = 64)
     queue.io.flush       := io.sync.flush
     queue.io.fetchData   := decoder.io.fetchData
     queue.io.carryIn     := decoder.io.carryIn
@@ -103,8 +111,7 @@ class Frontend extends Component {
     when(io.sync.flush) {
       carryReg    := 0
       hasCarryReg := False
-    }.elsewhen(validReg && queue.io.bufEmpty) {
-      // Only accept carry if staging buffer is empty (avoid overwrite)
+    }.elsewhen(validReg) {
       carryReg    := decoder.io.carryOut
       hasCarryReg := decoder.io.hasCarryOut
     }

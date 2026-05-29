@@ -39,6 +39,8 @@ class InstQueue(depth: Int = 16) extends Component {
     val instBits  = out Bits(32 bits)  // 32-bit: full; 16-bit: lower 16 bits
     val isRVC     = out Bool()         // true = compressed (16-bit)
     val bufEmpty  = out Bool()         // staging buffer ready for new data
+    val debugPush = out UInt(32 bits)   // total pushes to FIFO
+    val debugPop  = out UInt(32 bits)   // total pops from FIFO
   }
 
   // =========================================================================
@@ -101,7 +103,8 @@ class InstQueue(depth: Int = 16) extends Component {
   val bufBits  = Vec(Reg(Bits(32 bits)), 4)
   val bufRvc   = Vec(Reg(Bool()), 4)
 
-  // Write staging regs: latch when instXValid=1, clear on flush
+  // Write staging regs: latch when instXValid=1, clear on flush.
+  // FSM is throttled by needFetch && bufEmpty, so buffer overflow is prevented.
   when(io.flush) {
     bufValid.foreach(_ := False)
   }.otherwise {
@@ -154,6 +157,14 @@ class InstQueue(depth: Int = 16) extends Component {
   io.instBits := popPayload(32 downto 1)
   io.isRVC    := popPayload(0)
   io.bufEmpty := allEmpty
+
+  // Debug counters
+  val debugPush = Reg(UInt(32 bits)) init 0
+  val debugPop  = Reg(UInt(32 bits)) init 0
+  when(fifoIn.fire) { debugPush := debugPush + 1 }
+  when(fifo.io.pop.fire) { debugPop := debugPop + 1 }
+  io.debugPush := debugPush
+  io.debugPop  := debugPop
 }
 
 // =============================================================================
