@@ -21,6 +21,7 @@ class Frontend extends Component {
     val toFetch = master(CpuPipelineBus(addrWidth = 64, dataWidth = 64))
 
     val instValid = out Bool()
+    val instPc   = out UInt(64 bits)
     val instBits  = out Bits(32 bits)
     val instIsRVC     = out Bool()
     val instIll = out Bool()
@@ -123,6 +124,7 @@ class Frontend extends Component {
     expander.io.instIn := queue.io.instBits(15 downto 0)
 
     io.instValid := queue.io.instValid
+    io.instPc   := nextPcReg  // PC before increment: OLD reg value = current inst PC
     io.instBits  := Mux(queue.io.isRVC, expander.io.instOut.bits, queue.io.instBits)
     io.instIsRVC     := queue.io.isRVC
     io.instIll    := queue.io.isRVC && expander.io.ill

@@ -20,6 +20,7 @@ class TopV1(bootromPath: Option[String] = None) extends Component {
 
     // === instruction output ===
     val instValid = out Bool()
+    val instPc   = out UInt(64 bits)
     val instBits  = out Bits(32 bits)
     val instIsRVC = out Bool()
     val instIll   = out Bool()
@@ -56,6 +57,7 @@ class TopV1(bootromPath: Option[String] = None) extends Component {
     frontend.io.reset := io.reset
 
     io.instValid := frontend.io.instValid
+    io.instPc   := frontend.io.instPc
     io.instBits := frontend.io.instBits
     io.instIsRVC := frontend.io.instIsRVC
     io.instIll := frontend.io.instIll
@@ -65,6 +67,8 @@ class TopV1(bootromPath: Option[String] = None) extends Component {
     decode.io.inst    := frontend.io.instBits
     decode.io.instIll := frontend.io.instIll
     io.instDecode <> decode.io.decode
+
+
 
   }
 
