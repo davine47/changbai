@@ -1,6 +1,6 @@
 # ScalarDecode 模块设计文档
 
-> 版本: 2.0 | 文件: `v1/ScalarDecode.scala` | 依赖: `Instructions._`, `utils.DecodeConst`
+> 版本: 2.1 | 文件: `v1/ScalarDecode.scala` | 依赖: `Instructions._`, `utils.DecodeConst`
 
 ---
 
@@ -41,6 +41,7 @@ RISC-V RV64IMC 标量指令译码器。将 32-bit 指令转换为 19 个功能�
 | 信号 | 方向 | 位宽 | 说明 |
 |------|------|------|------|
 | `io_inst` | in | 32 | 指令（已展开至 32-bit） |
+| `io_instIll` | in | 1 | RVC 非法标志，强制 legal=0 |
 | `io_decode` | out | ScalarDecodeBundle | 19 字段译码信号 |
 
 ## 4. 译码表
@@ -63,7 +64,10 @@ RISC-V RV64IMC 标量指令译码器。将 32-bit 指令转换为 19 个功能�
 
 ## 5. 合法指令检测
 
-`legal` 信号由 `Symplify.logicOf` 对 coverAll 编码进行素数蕴含计算。额外门控：`effectiveLegal = decode.legal && !frontend.instIll`（排除 RVC 非法扩展指令）。
+`legal` 信号由 `Symplify.logicOf` 计算，再经 `io.instIll` 门控：
+```scala
+when(io.instIll) { io.decode.legal := False }
+```
 
 ## 6. 时序
 

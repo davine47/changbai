@@ -1,6 +1,6 @@
 # 支持文件参考
 
-> 版本: 1.1 | 文件: `v1/Instructions.scala`, `v1/MicroOps.scala`, `v1/utils/Decode.scala`
+> 版本: 1.2 | 文件: `v1/Instructions.scala`, `v1/MicroOps.scala`, `v1/utils/Decode.scala`
 
 ---
 

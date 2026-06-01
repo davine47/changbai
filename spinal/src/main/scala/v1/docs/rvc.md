@@ -1,6 +1,6 @@
 # RVC 指令子系统设计文档
 
-> 版本: 1.1 | 文件: `v1/RVCDecoder.scala`, `v1/RVCExpander.scala`, `v1/InstQueue.scala`
+> 版本: 1.2 | 文件: `v1/RVCDecoder.scala`, `v1/RVCExpander.scala`, `v1/InstQueue.scala`
 
 ---
 

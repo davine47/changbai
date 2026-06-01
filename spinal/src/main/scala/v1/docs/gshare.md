@@ -1,6 +1,6 @@
 # Gshare 分支预测器设计文档
 
-> 版本: 1.1 | 文件: `v1/Gshare.scala`, `v1/GenGshare.scala` | ISA-independent
+> 版本: 1.2 | 文件: `v1/Gshare.scala`, `v1/GenGshare.scala` | ISA-independent
 
 ---
 

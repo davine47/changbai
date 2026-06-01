@@ -1,6 +1,6 @@
 # ALU 模块设计文档
 
-> 版本: 1.1 | 文件: `v1/Alu.scala` | 依赖: `AluConfig`, `AluOp`
+> 版本: 1.2 | 文件: `v1/Alu.scala` | 依赖: `AluConfig`, `AluOp`
 
 ---
 
