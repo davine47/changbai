@@ -34,14 +34,12 @@ all: rtl build run
 
 rtl:
 	@echo "[Make] Generating RTL with $(BOOTROM_BIN) ..."
-	rm -f $(RTL_DIR)/V1SimTop.sv $(RTL_DIR)/V1SimTop.sv_toplevel_area_testRam_mem.*
+	rm -f $(RTL_DIR)/V1SimTop.sv $(RTL_DIR)/V1SimTop.sv_toplevel_area_testRam_mem.* $(RTL_DIR)/TestRam.sv
 	cd $(CHANGBAI_ROOT) && mill -i changbaiV1.spinal.runMain v1.GenV1SimTop "$(BOOTROM_BIN)" 2>&1 | grep "Generated"
 	cp $(SCALA_DIR)/IseeDecode.sv $(RTL_DIR)/
 
-$(BIN_DST):
-	@if [ -f "$(BIN_SRC)" ]; then cp "$(BIN_SRC)" "$(BIN_DST)"; fi
-
-build: $(BIN_DST)
+build:
+	@cp $(BIN_SRC) $(BIN_DST) 2>/dev/null || true
 	@echo "[Make] Verilating $(TOP) ..."
 	verilator $(VFLAGS) $(VSRCS) --top-module $(TOP) \
 		-CFLAGS "-std=c++17 -O2" \
@@ -57,3 +55,6 @@ wave:
 
 clean:
 	rm -rf $(BUILD_DIR) dump.vcd $(BIN_DST)
+
+verify_bin: rtl build
+	./$(BUILD_DIR)/V$(TOP) --max-cycles 5000 2>&1 | python3 verify_rawinst.py "$(BOOTROM_BIN)" -
