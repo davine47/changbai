@@ -100,7 +100,7 @@ class TopV1(bootromPath: Option[String] = None, enableIsee: Boolean = false) ext
 // TopV1Sim — simulation wrapper: TopV1 + TestRam
 // =============================================================================
 
-class TopV1Sim(bootromPath: Option[String] = None) extends Component {
+class V1SimTop(bootromPath: Option[String] = None) extends Component {
   val io = new Bundle {
     val clk   = in Bool()
     val reset = in Bool()
@@ -150,7 +150,7 @@ object GenTopV1 {
   }
 }
 
-object GenTopV1Sim {
+object GenV1SimTop {
   def main(args: Array[String]): Unit = {
     val bootrom = if (args.length >= 1) Some(args(0)) else None
     SpinalConfig(
@@ -161,8 +161,8 @@ object GenTopV1Sim {
       withTimescale = false,
       printFilelist = false
     ).generate {
-      new TopV1Sim(bootrom)
+      new V1SimTop(bootrom)
     }
-    println("Generated rtl/TopV1Sim.sv")
+    println("Generated rtl/V1SimTop.sv")
   }
 }

@@ -41,7 +41,7 @@ topv1_isee:
 	mill -i changbaiV1.spinal.runMain v1.GenTopV1 --isee
 
 topv1_sim:
-	mill -i changbaiV1.spinal.runMain v1.GenTopV1Sim
+	mill -i changbaiV1.spinal.runMain v1.GenV1SimTop
 
 scalar_decode:
 	mill -i changbaiV1.spinal.runMain v1.GenScalarDecode

@@ -1,4 +1,4 @@
-// sim_main.cpp — Verilator testbench for TopV1Sim
+// sim_main.cpp — Verilator testbench for V1SimTop
 //
 // Drives clock/reset, DPI-C calls happen automatically inside DUT.
 #include <memory>
@@ -7,7 +7,7 @@
 #include <cstdio>
 #include "verilated.h"
 #include "verilated_vcd_c.h"
-#include "VTopV1Sim.h"
+#include "VV1SimTop.h"
 
 int main(int argc, char** argv) {
     uint64_t max_cycles = 2000;
@@ -20,7 +20,7 @@ int main(int argc, char** argv) {
     ctx->traceEverOn(true);
     ctx->commandArgs(argc, argv);
 
-    auto top = std::make_unique<VTopV1Sim>(ctx.get(), "TOP");
+    auto top = std::make_unique<VV1SimTop>(ctx.get(), "TOP");
 
     VerilatedVcdC* tfp = new VerilatedVcdC;
     top->trace(tfp, 99);
