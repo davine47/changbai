@@ -43,12 +43,6 @@ topv1_isee:
 topv1_sim:
 	mill -i changbaiV1.spinal.runMain v1.GenTopV1Sim
 
-harness:
-	mill -i changbaiV1.spinal.runMain v1.GenTestHarness
-
-harness_bootrom:
-	mill -i changbaiV1.spinal.runMain v1.GenTestHarness env/coco_tb/TestRam/bootrom/bootrom.img
-
 scalar_decode:
 	mill -i changbaiV1.spinal.runMain v1.GenScalarDecode
 
