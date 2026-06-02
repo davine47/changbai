@@ -25,7 +25,9 @@ class IseeDecode extends BlackBox {
     val jal         = in Bool()
     val jalr        = in Bool()
     val useMem      = in Bool()
+    val memOp       = in UInt(5 bits)
     val useCsr      = in Bool()
+    val csrOp       = in UInt(5 bits)
   }
 
   // DPI-C wrapper is in IseeDecode.sv (added to VSRCS by Makefile)

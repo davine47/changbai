@@ -34,6 +34,15 @@ inst_queue:
 frontend:
 	mill -i changbaiV1.spinal.runMain v1.GenFrontend
 
+topv1:
+	mill -i changbaiV1.spinal.runMain v1.GenTopV1
+
+topv1_isee:
+	mill -i changbaiV1.spinal.runMain v1.GenTopV1 --isee
+
+topv1_sim:
+	mill -i changbaiV1.spinal.runMain v1.GenTopV1Sim
+
 harness:
 	mill -i changbaiV1.spinal.runMain v1.GenTestHarness
 
@@ -42,6 +51,9 @@ harness_bootrom:
 
 scalar_decode:
 	mill -i changbaiV1.spinal.runMain v1.GenScalarDecode
+
+isee:
+	mill -i changbaiV1.spinal.runMain v1.isee.GenIseeDemo
 
 integration:
 	mill -i changbaiV1.spinal.runMain v1.integration.GenIntegrationTop

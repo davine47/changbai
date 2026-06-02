@@ -65,7 +65,9 @@ class IseeDemoTop(bootromPath: Option[String] = None) extends Component {
     isee.io.jal         <> decode.io.decode.jal
     isee.io.jalr        <> decode.io.decode.jalr
     isee.io.useMem      <> decode.io.decode.useMem
+    isee.io.memOp       <> decode.io.decode.memOp.asUInt
     isee.io.useCsr      <> decode.io.decode.useCsr
+    isee.io.csrOp       <> decode.io.decode.csrOp.asUInt
   }
 }
 

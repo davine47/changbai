@@ -1,5 +1,5 @@
 // This file is AI[DeepSeek V4 Pro, high]-generated and manually verified.
-// DPI-C wrapper for difftest_decode
+// DPI-C wrapper for isee_decode
 // Port names use io_ prefix (SpinalHDL default)
 module IseeDecode (
   input  wire        io_clock,
@@ -14,7 +14,9 @@ module IseeDecode (
   input  wire        io_jal,
   input  wire        io_jalr,
   input  wire        io_useMem,
-  input  wire        io_useCsr
+  input  wire [4:0]  io_memOp,
+  input  wire        io_useCsr,
+  input  wire [4:0]  io_csrOp
 );
 
   import "DPI-C" function void isee_decode(
@@ -28,7 +30,9 @@ module IseeDecode (
     input byte    jal,
     input byte    jalr,
     input byte    useMem,
-    input byte    useCsr
+    input byte    memOp,
+    input byte    useCsr,
+    input byte    csrOp
   );
 
   always @(posedge io_clock) begin
@@ -37,7 +41,8 @@ module IseeDecode (
         {7'd0, io_isRVC}, {7'd0, io_ill}, {7'd0, io_legal},
         {3'd0, io_aluOp},
         {7'd0, io_branch}, {7'd0, io_jal}, {7'd0, io_jalr},
-        {7'd0, io_useMem}, {7'd0, io_useCsr});
+        {7'd0, io_useMem}, {3'd0, io_memOp},
+        {7'd0, io_useCsr},  {3'd0, io_csrOp});
     end
   end
 
