@@ -24,6 +24,7 @@ class TopV1(bootromPath: Option[String] = None, enableIsee: Boolean = false) ext
     val instValid = out Bool()
     val instPc   = out UInt(64 bits)
     val instBits  = out Bits(32 bits)
+    val instRaw  = out Bits(32 bits)
     val instIsRVC = out Bool()
     val instIll   = out Bool()
     val instDecode = out(new ScalarDecodeBundle)
@@ -61,6 +62,7 @@ class TopV1(bootromPath: Option[String] = None, enableIsee: Boolean = false) ext
     io.instValid := frontend.io.instValid
     io.instPc   := frontend.io.instPc
     io.instBits := frontend.io.instBits
+    io.instRaw := frontend.io.instRaw
     io.instIsRVC := frontend.io.instIsRVC
     io.instIll := frontend.io.instIll
 
@@ -79,6 +81,7 @@ class TopV1(bootromPath: Option[String] = None, enableIsee: Boolean = false) ext
       isee.io.valid       <> frontend.io.instValid
       isee.io.pc          <> frontend.io.instPc
       isee.io.instruction := frontend.io.instBits.asUInt
+      isee.io.rawInst    <> frontend.io.instRaw
       isee.io.isRVC       <> frontend.io.instIsRVC
       isee.io.ill         <> frontend.io.instIll
       isee.io.legal       <> decode.io.decode.legal

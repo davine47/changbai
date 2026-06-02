@@ -6,6 +6,7 @@ module IseeDecode (
   input  wire        io_valid,
   input  wire [63:0] io_pc,
   input  wire [31:0] io_instruction,
+  input  wire [31:0] io_rawInst,
   input  wire        io_isRVC,
   input  wire        io_ill,
   input  wire        io_legal,
@@ -22,6 +23,7 @@ module IseeDecode (
   import "DPI-C" function void isee_decode(
     input longint pc,
     input int     instruction,
+    input int     rawInst,
     input byte    isRVC,
     input byte    ill,
     input byte    legal,
@@ -37,7 +39,7 @@ module IseeDecode (
 
   always @(posedge io_clock) begin
     if (io_valid) begin
-      isee_decode(io_pc, io_instruction,
+      isee_decode(io_pc, io_instruction, io_rawInst,
         {7'd0, io_isRVC}, {7'd0, io_ill}, {7'd0, io_legal},
         {3'd0, io_aluOp},
         {7'd0, io_branch}, {7'd0, io_jal}, {7'd0, io_jalr},

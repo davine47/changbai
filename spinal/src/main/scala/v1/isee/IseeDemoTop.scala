@@ -57,6 +57,7 @@ class IseeDemoTop(bootromPath: Option[String] = None) extends Component {
     isee.io.valid       <> frontend.io.instValid
     isee.io.pc          <> frontend.io.instPc
     isee.io.instruction := frontend.io.instBits.asUInt
+    isee.io.rawInst    <> frontend.io.instRaw
     isee.io.isRVC       <> frontend.io.instIsRVC
     isee.io.ill         <> frontend.io.instIll
     isee.io.legal       <> decode.io.decode.legal

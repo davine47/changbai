@@ -39,6 +39,8 @@ int main(int argc, char** argv) {
 
     // Run
     printf("[SIM] Starting simulation (max_cycles=%llu)\n", (unsigned long long)max_cycles);
+    printf("[DIF]  # |        pc | expanded    raw       | fmt status      | op      | disasm                         flags\n");
+    printf("[DIF] ---|-----------|------------------------|-----------------|---------|------------------------------------------------\n");
     for (uint64_t cycle = 0; cycle < max_cycles; cycle++) {
         ctx->timeInc(5);
         top->io_clk = 1; top->eval(); tfp->dump(ctx->time());

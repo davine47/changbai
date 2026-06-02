@@ -23,6 +23,7 @@ class Frontend extends Component {
     val instValid = out Bool()
     val instPc   = out UInt(64 bits)
     val instBits  = out Bits(32 bits)
+    val instRaw  = out Bits(32 bits)  // unexpanded: RVC→low16,others→32b
     val instIsRVC     = out Bool()
     val instIll = out Bool()
 
@@ -126,6 +127,7 @@ class Frontend extends Component {
     io.instValid := queue.io.instValid
     io.instPc   := nextPcReg  // PC before increment: OLD reg value = current inst PC
     io.instBits  := Mux(queue.io.isRVC, expander.io.instOut.bits, queue.io.instBits)
+    io.instRaw  := Mux(queue.io.isRVC, queue.io.instBits(15 downto 0).resize(32 bits), queue.io.instBits)
     io.instIsRVC     := queue.io.isRVC
     io.instIll    := queue.io.isRVC && expander.io.ill
 

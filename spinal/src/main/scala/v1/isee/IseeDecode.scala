@@ -17,6 +17,7 @@ class IseeDecode extends BlackBox {
     val valid       = in Bool()
     val pc          = in UInt(64 bits)
     val instruction = in UInt(32 bits)
+    val rawInst     = in Bits(32 bits)
     val isRVC       = in Bool()
     val ill         = in Bool()
     val legal       = in Bool()

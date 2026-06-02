@@ -65,6 +65,7 @@ static const char* csrOpName(uint8_t op) {
 extern "C" void isee_decode(
     uint64_t pc,
     uint32_t instruction,
+    uint32_t rawInst,
     uint8_t  isRVC,
     uint8_t  ill,
     uint8_t  legal,
@@ -93,9 +94,9 @@ extern "C" void isee_decode(
         snprintf(opstr, sizeof(opstr), "%s", aluOpName(aluOp));
     }
 
-    printf("[DIF] %4llu | 0x%08x | 0x%08x | %s %-11s | %-7s | %-30s",
+    printf("[DIF] %4llu | 0x%08x | %08x %08x | %s %-11s | %-7s | %-30s",
            (unsigned long long)count,
-           (unsigned int)pc, instruction,
+           (unsigned int)pc, instruction, rawInst,
            rvc, legal_str, opstr,
            dasm(instruction));
 
