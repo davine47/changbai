@@ -21,6 +21,7 @@ class Frontend extends Component {
     val toFetch = master(CpuPipelineBus(addrWidth = 64, dataWidth = 64))
 
     val instValid = out Bool()
+    val instPc   = out UInt(64 bits)
     val instBits  = out Bits(32 bits)
     val instIsRVC     = out Bool()
     val instIll = out Bool()
@@ -46,31 +47,34 @@ class Frontend extends Component {
     val nextPcReg = Reg(UInt(64 bits)) init 0
     val fetchAddr = nextPcReg(63 downto 3) @@ U"000"  // 8-byte aligned
     val lastFetchAddr = Reg(UInt(64 bits)) init 0
-    val fetchReq      = Reg(Bool()) init False
+    val fetchReqValid = Reg(Bool()) init False
+    val fetchOnflying = Reg(Bool()) init False
     val booted        = Reg(Bool()) init False
 
-    val needFetch = (fetchAddr =/= lastFetchAddr) || hasCarryReg
+    val needFetch = (hasCarryReg || (fetchAddr > lastFetchAddr)) && !fetchOnflying
 
     when(io.sync.flush) {
       nextPcReg     := 0
       lastFetchAddr := 0
-      fetchReq      := False
-      booted        := False
+      fetchReqValid := True   // restart fetch from addr 0
+      fetchOnflying  := False
+      // booted NOT cleared — only reset clears it
     }.elsewhen(!booted) {
       booted        := True
-      fetchReq      := True
+      fetchReqValid := True
       lastFetchAddr := 0
-    }.elsewhen(!fetchReq) {
+    }.elsewhen(!fetchReqValid) {
       when(needFetch) {
-        fetchReq      := True
-        lastFetchAddr := fetchAddr
+        fetchReqValid := True
+        lastFetchAddr := hasCarryReg ? (lastFetchAddr + 8) | fetchAddr
       }
     }.elsewhen(io.toFetch.reqReady) {
-      fetchReq := False
+      fetchReqValid := False
+      fetchOnflying := True   // wait for response
     }
 
     io.toFetch.reqAddr  := lastFetchAddr
-    io.toFetch.reqValid := fetchReq
+    io.toFetch.reqValid := fetchReqValid
 
     // =====================================================================
     // RVCDecoder — fetch response → instruction boundary scan
@@ -82,18 +86,15 @@ class Frontend extends Component {
     decoder.io.carryIn    := carryReg
     decoder.io.hasCarryIn := hasCarryReg
 
-    when(io.sync.flush) {
-      carryReg    := 0
-      hasCarryReg := False
-    }.elsewhen(validReg) {
-      carryReg    := decoder.io.carryOut
-      hasCarryReg := decoder.io.hasCarryOut
+    // Clear fetchOnflying when response arrives
+    when(validReg) {
+      fetchOnflying := False
     }
 
     // =====================================================================
     // InstQueue — instruction buffer (4→1 per cycle)
     // =====================================================================
-    val queue = new InstQueue(depth = 16)
+    val queue = new InstQueue(depth = 64)
     queue.io.flush       := io.sync.flush
     queue.io.fetchData   := decoder.io.fetchData
     queue.io.carryIn     := decoder.io.carryIn
@@ -107,6 +108,15 @@ class Frontend extends Component {
     queue.io.inst3Valid  := decoder.io.inst3Valid
     queue.io.inst3Is32   := decoder.io.inst3Is32
 
+    // Carry update (must be after queue definition)
+    when(io.sync.flush) {
+      carryReg    := 0
+      hasCarryReg := False
+    }.elsewhen(validReg) {
+      carryReg    := decoder.io.carryOut
+      hasCarryReg := decoder.io.hasCarryOut
+    }
+
     // =====================================================================
     // RVCExpander — 16-bit → 32-bit (pure combinational)
     // =====================================================================
@@ -114,6 +124,7 @@ class Frontend extends Component {
     expander.io.instIn := queue.io.instBits(15 downto 0)
 
     io.instValid := queue.io.instValid
+    io.instPc   := nextPcReg  // PC before increment: OLD reg value = current inst PC
     io.instBits  := Mux(queue.io.isRVC, expander.io.instOut.bits, queue.io.instBits)
     io.instIsRVC     := queue.io.isRVC
     io.instIll    := queue.io.isRVC && expander.io.ill

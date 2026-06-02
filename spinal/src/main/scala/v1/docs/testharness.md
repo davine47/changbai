@@ -1,6 +1,6 @@
 # TestHarness 模块设计文档
 
-> 版本: 2.0 | 文件: `v1/TestHarness.scala` | 依赖: `TopV1`, `TestRam`, `ScalarDecodeBundle`
+> 版本: 2.1 | 文件: `v1/TestHarness.scala` | 依赖: `TopV1`, `TestRam`, `ScalarDecodeBundle`
 
 ---
 
@@ -32,6 +32,7 @@ TestHarness
 | `io_instBits` | out | 32 | 32-bit 指令 |
 | `io_instIsRVC` | out | 1 | 压缩指令标志 |
 | `io_instIll` | out | 1 | RVC 非法指令标志 |
+| `io_instEffective` | out | 1 | 有效且合法 (instValid && decLegal) |
 | `io_decLegal` | out | 1 | 译码合法（含 RVC 非法检测） |
 | `io_decBranch` | out | 1 | 分支 |
 | `io_decJal` | out | 1 | JAL |

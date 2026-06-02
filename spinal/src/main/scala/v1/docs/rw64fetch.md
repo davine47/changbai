@@ -1,6 +1,6 @@
 # Rw64Fetch 模块设计文档（含 Rw64Bus 协议）
 
-> 版本: 1.1 | 文件: `v1/Rw64Fetch.scala` | 依赖: `Rw64Bus`, `CpuPipelineBus`, `CpuOpcode`, `CpuLen`
+> 版本: 1.2 | 文件: `v1/Rw64Fetch.scala` | 依赖: `Rw64Bus`, `CpuPipelineBus`, `CpuOpcode`, `CpuLen`
 
 ---
 

@@ -1,6 +1,6 @@
 # TopV1 模块设计文档
 
-> 版本: 1.0 | 文件: `v1/TopV1.scala` | 依赖: `Frontend`, `Rw64Fetch`, `ScalarDecode`
+> 版本: 1.1 | 文件: `v1/TopV1.scala` | 依赖: `Frontend`, `Rw64Fetch`, `ScalarDecode`
 
 ---
 
@@ -19,8 +19,8 @@ CPU 顶层模块。集成 Frontend（取指） + Rw64Fetch（协议适配） + S
 | `io_instBits` | out | 32 | 32-bit 指令 |
 | `io_instIsRVC` | out | 1 | 压缩指令标志 |
 | `io_instIll` | out | 1 | RVC 非法指令标志 |
-| `io_instDecode` | out | ScalarDecodeBundle | 译码信号（19 字段） |
-| `io_rw` | master | Rw64Bus(64,64) | 取指总线（对外连 TestRam） |
+| `io_instDecode` | out | ScalarDecodeBundle | 译码信号（19 字段，legal 已含 instIll 门控） |
+| `io_rw` | master | Rw64Bus(64,64) | 取指总线 |
 
 ## 3. 内部结构
 
