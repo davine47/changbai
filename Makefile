@@ -1,6 +1,9 @@
 test:
 	mill emulator[examples.Adder,SimpleGenerator].mfccompiler.compile
 
+debug-signal:
+	mill emulator[examples.MyModule,SimpleGenerator].mfccompiler.compile
+
 hello:
 	mill -i changbaiV1.spinal.runMain changbaiV1.sayHello
 

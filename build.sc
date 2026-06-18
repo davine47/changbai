@@ -141,7 +141,7 @@ trait Emulator extends Cross.Module2[String, String] {
         "--split-verilog",
         "--preserve-values=named",
         "--output-annotation-file=mfc.anno.json",
-        s"-o=/Users/wenjunnan/projects/yuanqi/targets/changbai/dest"
+        s"-o=./rtl/dest"
       ).call(T.dest)
       PathRef(T.dest)
     }
@@ -162,5 +162,6 @@ trait Emulator extends Cross.Module2[String, String] {
 
 object emulator extends Cross[Emulator](
 
-  ("examples.Adder", "SimpleGenerator")
+  ("examples.Adder", "SimpleGenerator"),
+  ("examples.MyModule", "SimpleGenerator")
 )
